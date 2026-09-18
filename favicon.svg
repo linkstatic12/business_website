@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none">
+  <!-- Precision instrument substrate with micro-chamfer and hairline border -->
+  <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+  
+  <!-- Subtle inner ambient bevel highlight -->
+  <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+
+  <!-- Mathematical einsum / Sigma-tensor glyph inspired by Einstein summation notation -->
+  <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Precision focal tensor index point in electric cadmium amber -->
+  <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+  <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+</svg>

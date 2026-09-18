@@ -1,0 +1,3104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="theme-color" content="#000000">
+  <title>Data & AI Engineering Consulting | einsum</title>
+  <meta name="description"
+    content="Data and AI engineering on Databricks, Microsoft Fabric and Azure. einsum builds governed data platforms, production AI systems and analytics your team can operate.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    /* ── WebGL Fluid Background ──────────────────────────── */
+    #fluid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+
+    #fluid-bg canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    /* Noise overlay on top of the fluid */
+    #fluid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.02;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ── Navigation ──────────────────────────────────────── */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      pointer-events: auto;
+      width: 100%;
+      max-width: 1240px;
+      height: 96px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 0;
+      transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    /* Scrolled state: frosted glass pill */
+    .nav-bar.scrolled .nav-inner {
+      max-width: 860px;
+      height: 56px;
+      margin-top: 12px;
+      background: rgba(20, 20, 20, 0.65);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border-color: rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      padding: 0 1.25rem;
+    }
+
+    .nav-bar.scrolled .nav-brand svg {
+      height: 28px;
+      width: 28px;
+      transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .nav-brand svg {
+      transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-left: 12px;
+    }
+
+    .nav-brand svg {
+      height: 36px;
+      width: 36px;
+      flex-shrink: 0;
+    }
+
+    .nav-brand-text {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: #fff;
+    }
+
+    .nav-links {
+      display: none;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+
+    .nav-link {
+      position: relative;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: rgba(255, 255, 255, 0.55);
+      transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .nav-link:hover::after {
+      transform: scaleX(1);
+    }
+
+    .nav-cta {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #fff;
+      color: #000;
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      border-radius: 0;
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .nav-bar.scrolled .nav-cta {
+      border-radius: 9999px;
+      padding: 8px 18px;
+    }
+
+    .nav-cta:hover {
+      background: #e5e5e5;
+    }
+
+    .nav-cta:active {
+      transform: scale(0.95);
+    }
+
+    @media (min-width: 768px) {
+      .nav-cta {
+        display: inline-flex;
+      }
+    }
+
+    /* ── Hero Section ────────────────────────────────────── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    /* Grid overlay */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .hero-grid-inner {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      border-left: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .hero-grid-col {
+      height: 100%;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .hero-grid-inner {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .hero-hline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .hero-content {
+        padding: 0 2rem;
+      }
+    }
+
+    .hero-title-thin {
+      font-size: clamp(3rem, 8vw, 9rem);
+      font-weight: 100;
+      letter-spacing: -0.05em;
+      line-height: 0.8;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(60px);
+      animation: heroSlideUp 1s cubic-bezier(0.19, 1, 0.22, 1) 0.3s forwards;
+    }
+
+    .hero-title-bold {
+      font-size: clamp(3rem, 8vw, 9rem);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 0.8;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(60px);
+      animation: heroSlideUp 1s cubic-bezier(0.19, 1, 0.22, 1) 0.5s forwards;
+    }
+
+    @keyframes heroSlideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-subtitle {
+      margin-top: 2rem;
+      padding-left: 2px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: heroFadeIn 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.9s forwards;
+    }
+
+    @keyframes heroFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-subtitle p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      max-width: 540px;
+      line-height: 1.7;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    @media (min-width: 768px) {
+      .hero-subtitle {
+        margin-top: 4rem;
+      }
+
+      .hero-subtitle p {
+        font-size: 13px;
+      }
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding: 1rem 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.5s;
+    }
+
+    .hero-btn:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .hero-btn-fill {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .hero-btn:hover .hero-btn-fill {
+      transform: scaleX(1);
+    }
+
+    .hero-btn span {
+      position: relative;
+      z-index: 10;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #fff;
+      transition: color 0.5s;
+    }
+
+    .hero-btn:hover span {
+      color: #000;
+    }
+
+    .hero-btn svg {
+      position: relative;
+      z-index: 10;
+      width: 16px;
+      height: 16px;
+      color: #fff;
+      transition: color 0.5s;
+    }
+
+    .hero-btn:hover svg {
+      color: #000;
+    }
+
+    /* ── Section Commons ─────────────────────────────────── */
+    .section {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 6rem 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+
+    @media (min-width: 768px) {
+      .section {
+        padding: 8rem 0;
+      }
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .section-inner {
+        padding: 0 2rem;
+      }
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .section-label-line {
+      display: inline-block;
+      position: relative;
+      height: 1px;
+      max-width: 280px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      margin-left: 1rem;
+      vertical-align: middle;
+    }
+
+    .section-heading {
+      font-size: clamp(2rem, 4.6vw, 4.25rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      margin-top: 0.5rem;
+    }
+
+    .section-heading-bold {
+      font-weight: 700;
+    }
+
+    /* ── Manifesto Section ───────────────────────────────── */
+    .manifesto {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 250vh;
+      background: transparent;
+      border-top: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .manifesto-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .manifesto-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .manifesto-inner {
+        padding: 0 2rem;
+      }
+    }
+
+    .manifesto-text {
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1.04;
+      font-size: clamp(1.7rem, 4.8vw, 4.8rem);
+      max-width: 1400px;
+    }
+
+    .manifesto-text .line {
+      display: block;
+      margin-bottom: 0.1em;
+    }
+
+    /* Each word starts as a faint outline, then fills to white on scroll */
+    .manifesto-text .mword {
+      display: inline-block;
+      margin-right: 0.26em;
+      position: relative;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+      color: transparent;
+      transition: color 0.4s ease, -webkit-text-stroke 0.4s ease;
+    }
+
+    .manifesto-text .mword.lit {
+      -webkit-text-stroke: 0;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .manifesto-text .mword.lit.is-bold {
+      color: #fff;
+    }
+
+    .manifesto-text .mword.is-bold {
+      font-weight: 700;
+    }
+
+    .manifesto-text .mword:not(.is-bold) {
+      font-weight: 100;
+    }
+
+    /* Progress bar */
+    .manifesto-progress {
+      position: relative;
+      height: 1px;
+      max-width: 280px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      margin-left: 1rem;
+      overflow: hidden;
+    }
+
+    .manifesto-progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 1px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.4);
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+
+    /* ── Neural Core (Architecture) ──────────────────────── */
+    .arch-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-left: 1.5rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .arch-step {
+      transition: color 0.5s;
+      color: #fff;
+    }
+
+    .arch-step-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .arch-step-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+    }
+
+    .arch-step-title {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .arch-step-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+    }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .arch-grid {
+        grid-template-columns: minmax(230px, 290px) 1fr;
+        gap: 3rem;
+        align-items: center;
+        margin-top: 0;
+      }
+    }
+
+    /* Architecture SVG diagram container */
+    .arch-diagram {
+      position: relative;
+      width: 100%;
+      background: #050505;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (min-width: 768px) {
+      .arch-diagram {
+        aspect-ratio: 16/9;
+      }
+    }
+
+    .arch-diagram-header {
+      padding: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .arch-diagram-header {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        z-index: 20;
+        padding: 0;
+      }
+    }
+
+    .arch-diagram h3 {
+      font-size: 1.25rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+    }
+
+    .arch-diagram h3 span {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .arch-diagram-legend {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .arch-diagram-legend .dot {
+      width: 6px;
+      height: 6px;
+      background: #71717a;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .arch-diagram-legend .dot-light {
+      background: #a1a1aa;
+    }
+
+    .arch-diagram svg {
+      width: 100%;
+      height: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Grid overlay inside diagram */
+    .arch-diagram-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.1;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .arch-diagram-radial {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 70%);
+      pointer-events: none;
+    }
+
+    /* Architecture diagram interactive & hover effects */
+    .arch-node {
+      cursor: pointer;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    .arch-node-frame {
+      transition: stroke 0.3s ease, fill 0.3s ease, filter 0.3s ease;
+    }
+
+    .arch-node:hover .arch-node-frame,
+    .arch-node.is-active .arch-node-frame {
+      fill: #141416;
+      stroke: rgba(255, 255, 255, 0.7);
+      filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.2));
+    }
+
+    .arch-node.is-dimmed {
+      opacity: 0.25;
+    }
+
+    /* Flowing animated stream when hovering over flowchart */
+    .arch-stream-path {
+      stroke-dasharray: 6 8;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 1.5;
+      fill: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .arch-diagram:hover .arch-stream-path {
+      opacity: 0.75;
+      animation: archDashFlow 1.1s linear infinite;
+    }
+
+    .arch-stream-path.is-active {
+      opacity: 1 !important;
+      stroke: #ffffff;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+      animation: archDashFlow 0.8s linear infinite !important;
+    }
+
+    .arch-stream-path.is-dimmed {
+      opacity: 0.08 !important;
+    }
+
+    @keyframes archDashFlow {
+      from {
+        stroke-dashoffset: 28;
+      }
+
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    #base-links path {
+      transition: stroke 0.3s ease, opacity 0.3s ease;
+    }
+
+    .arch-diagram:hover #base-links path {
+      stroke: #52525b;
+    }
+
+    .arch-step {
+      cursor: pointer;
+      padding: 0.45rem 0.6rem;
+      margin: 0 -0.6rem;
+      border-radius: 4px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .arch-step:hover,
+    .arch-step.is-active {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .arch-step:hover .arch-step-title,
+    .arch-step.is-active .arch-step-title {
+      color: #ffffff;
+    }
+
+    .arch-step:hover .arch-step-num,
+    .arch-step.is-active .arch-step-num {
+      color: #ffffff;
+    }
+
+    /* Tooltip container styling */
+    #arch-tooltip {
+      position: absolute;
+      left: 1.5rem;
+      bottom: 1.5rem;
+      max-width: 440px;
+      padding: 0.75rem 1.1rem;
+      background: rgba(10, 10, 12, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    #arch-tooltip.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Capabilities Sticky Scroll-Driven Carousel ─────── */
+    .capabilities-section {
+      position: relative;
+      width: 100%;
+      height: 420vh;
+      /* creates the scroll distance */
+    }
+
+    .capabilities-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 1.5rem 0;
+    }
+
+    @media (min-width: 768px) {
+      .capabilities-sticky {
+        padding: 2.5rem 0;
+      }
+    }
+
+    .carousel-header-wrap {
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-header-wrap {
+        padding: 0 2rem;
+      }
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .carousel-counter {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: rgba(255, 255, 255, 0.4);
+      margin-right: 0.5rem;
+    }
+
+    .carousel-counter #carousel-current {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .carousel-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.02);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .carousel-btn:active {
+      transform: scale(0.95);
+    }
+
+    .carousel-viewport {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 2rem;
+      width: max-content;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      will-change: transform;
+      transition: transform 0.08s linear;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-track {
+        gap: 3vw;
+        padding-left: max(2rem, calc((100vw - 1600px) / 2 + 2rem));
+        padding-right: 4rem;
+      }
+    }
+
+    .cap-card {
+      position: relative;
+      display: block;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.02);
+      transition: border-color 0.6s ease, background 0.6s ease;
+      width: 86vw;
+      max-width: 820px;
+      min-height: 360px;
+    }
+
+    @media (min-width: 768px) {
+      .cap-card {
+        width: 58vw;
+        max-width: 860px;
+        min-height: 420px;
+      }
+    }
+
+    .cap-card:hover {
+      border-color: rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .cap-card-inner {
+      position: relative;
+      min-height: 320px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .cap-card-inner {
+        padding: 2rem;
+        min-height: 380px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .cap-card-inner {
+        padding: 2.5rem;
+      }
+    }
+
+    .cap-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .cap-card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      color: rgba(255, 255, 255, 0.5);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cap-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px 8px;
+      max-width: 70%;
+    }
+
+    .cap-card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .cap-card-tag-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .cap-card-body {
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .cap-card-body {
+        margin-top: 0;
+      }
+    }
+
+    .cap-card-title {
+      font-size: clamp(1.9rem, 3.2vw, 3.4rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+      color: transparent;
+      transition: all 0.6s ease;
+    }
+
+    .cap-card:hover .cap-card-title {
+      -webkit-text-stroke: 0;
+      color: #fff;
+    }
+
+    .cap-card-desc {
+      margin-top: 1rem;
+      max-width: 38ch;
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.55);
+      transition: color 0.6s ease;
+    }
+
+    @media (min-width: 1024px) {
+      .cap-card-desc {
+        font-size: 15px;
+      }
+    }
+
+    .cap-card-explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      transition: color 0.4s;
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .cap-card-explore {
+        margin-top: 0;
+      }
+    }
+
+    .cap-card:hover .cap-card-explore {
+      color: #fff;
+    }
+
+    .cap-card-explore svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .cap-card:hover .cap-card-explore svg {
+      transform: translate(2px, -2px);
+    }
+
+    .cap-card-watermark {
+      position: absolute;
+      right: 1.5rem;
+      bottom: 1rem;
+      font-size: clamp(4.5rem, 9vw, 8.5rem);
+      font-weight: 100;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.12);
+      color: transparent;
+      user-select: none;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (min-width: 768px) {
+      .cap-card-watermark {
+        right: 2rem;
+        bottom: 1.5rem;
+      }
+    }
+
+    /* Carousel Timeline Track Indicator */
+    .carousel-timeline-container {
+      max-width: 1600px;
+      width: 100%;
+      margin: 2.25rem auto 0;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-timeline-container {
+        padding: 0 2rem;
+      }
+    }
+
+    .carousel-timeline-rail {
+      position: relative;
+      width: 100%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+
+    .carousel-timeline-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background: #ffffff;
+      transform-origin: left;
+      transform: scaleX(0.2);
+      transition: transform 0.08s linear;
+    }
+
+    .carousel-timeline-steps {
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      gap: 0.5rem;
+    }
+
+    .carousel-timeline-step {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: color 0.35s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .carousel-timeline-step:hover {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .carousel-timeline-step.is-active {
+      color: #ffffff;
+    }
+
+    .carousel-timeline-step .step-name {
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .carousel-timeline-step .step-name {
+        display: inline;
+      }
+    }
+
+    /* ── Start Project / Engagement Timeline Section ───── */
+    .timeline-section {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 6rem 1rem;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .timeline-section {
+        padding: 8rem 2rem;
+      }
+    }
+
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      margin-top: 3.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .timeline-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 4rem;
+        align-items: start;
+      }
+    }
+
+    /* Timeline spine & phases */
+    .timeline-track {
+      position: relative;
+      padding-left: 2rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .timeline-track {
+        padding-left: 3rem;
+        gap: 2.25rem;
+      }
+    }
+
+    .timeline-phase {
+      position: relative;
+      cursor: pointer;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .timeline-phase::before {
+      content: '';
+      position: absolute;
+      left: calc(-2rem - 5px);
+      top: 1.75rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      transition: all 0.35s ease;
+    }
+
+    @media (min-width: 768px) {
+      .timeline-phase::before {
+        left: calc(-3rem - 5px);
+      }
+    }
+
+    .timeline-phase:hover,
+    .timeline-phase.is-active {
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateX(4px);
+    }
+
+    .timeline-phase.is-active::before {
+      background: #ffffff;
+      border-color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
+      transform: scale(1.3);
+    }
+
+    .timeline-phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-phase-num {
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .timeline-phase-duration {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    .timeline-phase-title {
+      font-size: 1.25rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-phase-desc {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .timeline-deliverables {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .timeline-pill {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 2px 7px;
+    }
+
+    /* Start Project CTA / Form Card */
+    .start-project-card {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(10, 10, 12, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .start-project-card {
+        padding: 3rem;
+      }
+    }
+
+    .start-project-title {
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 200;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .start-project-title span {
+      display: block;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .start-project-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .project-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .form-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .scope-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.02);
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .scope-tag:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
+    .scope-tag.is-selected {
+      border-color: #fff;
+      background: #fff;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .btn-submit-project {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.95rem 1.5rem;
+      background: #ffffff;
+      color: #000000;
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit-project:hover {
+      background: #e4e4e7;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit-project:active {
+      transform: scale(0.98);
+    }
+
+    .submit-success-msg {
+      display: none;
+      padding: 1.25rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 13px;
+      line-height: 1.6;
+      color: #fff;
+    }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 20;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 4rem 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-brand svg {
+      height: 32px;
+      width: 32px;
+      flex-shrink: 0;
+    }
+
+    .footer-brand span {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-link {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      transition: color 0.3s;
+    }
+
+    .footer-link:hover {
+      color: #fff;
+    }
+
+    .footer-copy {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Scroll animations ───────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1), transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Mobile menu (hamburger hidden for now) ──────────── */
+    .nav-hamburger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+    }
+
+    @media (min-width: 768px) {
+      .nav-hamburger {
+        display: none;
+      }
+    }
+
+    .nav-hamburger svg {
+      width: 22px;
+      height: 22px;
+      overflow: visible;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+     WebGL FLUID BACKGROUND
+     ═══════════════════════════════════════════════════════ -->
+  <div id="fluid-bg" aria-hidden="true">
+    <canvas id="fluid-canvas"></canvas>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════════════════ -->
+  <div class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <a href="index.html" aria-label="einsum, home" style="display:flex;align-items:center;gap:12px;">
+          <!-- einsum Logo Mark -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none" class="nav-brand-icon" aria-hidden="true">
+            <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+            <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+            <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+            <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+          </svg>
+          <span class="nav-brand-text">einsum</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="#neural-core" class="nav-link">Services</a>
+        <a href="#capabilities" class="nav-link">Outcomes</a>
+        <a href="#" class="nav-link">About</a>
+        <a href="#" class="nav-link">Careers</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="nav-hamburger" aria-label="Open navigation">
+          <svg viewBox="0 0 60 60" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4">
+            <line x1="3" y1="22" x2="57" y2="22"></line>
+            <line x1="3" y1="38" x2="57" y2="38"></line>
+          </svg>
+        </button>
+        <a href="contact.html" class="nav-cta">
+          <span>Start Project</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════ -->
+  <section class="hero" id="hero">
+    <!-- Grid lines -->
+    <div class="hero-grid">
+      <div class="hero-grid-inner">
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+        <div class="hero-grid-col"></div>
+      </div>
+      <div class="hero-hline" style="top:25vh"></div>
+      <div class="hero-hline" style="top:75vh"></div>
+    </div>
+
+    <div class="hero-content">
+      <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">We
+        Architect Intelligence.</h1>
+      <div class="hero-title-thin" aria-hidden="true">We Architect</div>
+      <div class="hero-title-bold" aria-hidden="true">Intelligence.</div>
+      <div class="hero-subtitle">
+        <p>Data and AI engineering. We design, build and run the platforms behind a company's analytics and AI.</p>
+        <a href="#neural-core" class="hero-btn">
+          <div class="hero-btn-fill"></div>
+          <span>Explore The Core</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+     MANIFESTO
+     ═══════════════════════════════════════════════════════ -->
+  <section class="manifesto" id="manifesto-section" aria-label="Manifesto">
+    <div class="manifesto-sticky">
+      <div class="manifesto-inner">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+          <span class="section-label">Manifesto</span>
+          <span class="manifesto-progress"><span class="manifesto-progress-fill" id="manifesto-progress"></span></span>
+        </div>
+        <div class="manifesto-text" id="manifesto-text">
+          <span class="line">
+            <span class="mword">Intelligence</span><span class="mword">requires</span><span
+              class="mword is-bold">Structure.</span>
+          </span>
+          <span class="line">
+            <span class="mword">We</span><span class="mword">transform</span><span class="mword">the</span><span
+              class="mword">chaotic</span><span class="mword">ocean</span>
+          </span>
+          <span class="line">
+            <span class="mword">of</span><span class="mword">enterprise</span><span class="mword">data</span><span
+              class="mword">into</span><span class="mword">the</span>
+          </span>
+          <span class="line">
+            <span class="mword is-bold">governed,</span><span class="mword is-bold">scalable</span><span
+              class="mword">fuel</span>
+          </span>
+          <span class="line">
+            <span class="mword">that</span><span class="mword">powers</span><span
+              class="mword is-bold">decision-grade</span><span class="mword">AI.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+     NEURAL CORE (Architecture)
+     ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="neural-core">
+    <div class="section-inner">
+      <div class="reveal">
+        <span class="section-label">01 / System Architecture</span>
+        <h2 class="section-heading">The Neural Core.</h2>
+      </div>
+
+      <div class="arch-grid" style="margin-top:2.5rem;">
+        <div class="arch-steps reveal">
+          <div class="arch-step" data-step="ingest">
+            <div class="arch-step-header">
+              <span class="arch-step-num">01</span>
+              <span class="arch-step-title">Ingest</span>
+            </div>
+            <p class="arch-step-desc">Every source lands raw and immutable. Nothing is lost, nothing is trusted yet.</p>
+          </div>
+          <div class="arch-step" data-step="refine">
+            <div class="arch-step-header">
+              <span class="arch-step-num">02</span>
+              <span class="arch-step-title">Refine</span>
+            </div>
+            <p class="arch-step-desc">Cleansed, deduplicated, modelled. One schema the whole company can read.</p>
+          </div>
+          <div class="arch-step" data-step="serve">
+            <div class="arch-step-header">
+              <span class="arch-step-num">03</span>
+              <span class="arch-step-title">Serve</span>
+            </div>
+            <p class="arch-step-desc">Dashboards, models and agents draw from the same governed products.</p>
+          </div>
+          <div class="arch-step" data-step="govern">
+            <div class="arch-step-header">
+              <span class="arch-step-num">04</span>
+              <span class="arch-step-title">Govern</span>
+            </div>
+            <p class="arch-step-desc">Metadata drives orchestration. Every run is traceable, every change is versioned.
+            </p>
+          </div>
+        </div>
+
+        <div class="arch-diagram reveal">
+          <div class="arch-diagram-radial"></div>
+          <div class="arch-diagram-grid"></div>
+          <div class="arch-diagram-header">
+            <h3>Modern Data <span>Platform</span></h3>
+            <div class="arch-diagram-legend">
+              <div><span class="dot"></span>Control Plane</div>
+              <div><span class="dot dot-light"></span>Data Plane</div>
+            </div>
+          </div>
+          <svg id="arch-svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMin meet" role="img"
+            aria-label="Modern data platform architecture">
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#3f3f46"></polygon>
+              </marker>
+              <marker id="arrow-bright" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#ffffff"></polygon>
+              </marker>
+              <radialGradient id="packet-glow">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"></stop>
+                <stop offset="35%" stop-color="#e4e4e7" stop-opacity="0.5"></stop>
+                <stop offset="100%" stop-color="#a1a1aa" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <!-- Control Plane zone -->
+            <rect x="380" y="40" width="440" height="120" rx="0" fill="rgba(255,255,255,0.01)"
+              stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"></rect>
+            <text x="600" y="30" font-size="10" fill="#71717a" text-anchor="middle" letter-spacing="2" font-weight="600"
+              class="mono" style="text-transform:uppercase;opacity:0.7">Control Plane</text>
+            <!-- Data Plane zone -->
+            <rect x="320" y="200" width="560" height="320" rx="0" fill="rgba(255,255,255,0.01)"
+              stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="4 4"></rect>
+            <text x="600" y="540" font-size="10" fill="#a1a1aa" text-anchor="middle" letter-spacing="2"
+              font-weight="600" class="mono" style="text-transform:uppercase;opacity:0.7">Unified Data Plane</text>
+
+            <!-- Base links (always visible, dim) -->
+            <g id="base-links" style="opacity:0.6">
+              <path data-link="source-bronze" d="M 190 350 L 360 350" stroke="#3f3f46" stroke-width="1.5" fill="none"
+                marker-end="url(#arrow)"></path>
+              <path data-link="bronze-silver" d="M 480 350 L 540 350" stroke="#3f3f46" stroke-width="1.5" fill="none"
+                marker-end="url(#arrow)"></path>
+              <path data-link="silver-gold" d="M 660 350 L 720 350" stroke="#3f3f46" stroke-width="1.5" fill="none"
+                marker-end="url(#arrow)"></path>
+              <path data-link="gold-serve" d="M 840 350 L 1000 350" stroke="#3f3f46" stroke-width="1.5" fill="none"
+                marker-end="url(#arrow)"></path>
+              <path data-link="adf-meta" d="M 640 100 L 560 100" stroke="#52525b" stroke-width="1.5"
+                stroke-dasharray="4,4" fill="none" style="opacity:0.4"></path>
+              <path data-link="adf-bronze" d="M 720 130 L 720 160 L 420 160 L 420 280" stroke="#52525b"
+                stroke-width="1.5" stroke-dasharray="4,4" fill="none" style="opacity:0.4"></path>
+              <path data-link="adf-silver" d="M 720 130 L 720 160 L 600 160 L 600 280" stroke="#52525b"
+                stroke-width="1.5" stroke-dasharray="4,4" fill="none" style="opacity:0.4"></path>
+              <path data-link="adf-gold" d="M 720 130 L 720 160 L 780 160 L 780 280" stroke="#52525b" stroke-width="1.5"
+                stroke-dasharray="4,4" fill="none" style="opacity:0.4"></path>
+            </g>
+
+            <!-- Bright streaming links (animated stream on hover) -->
+            <g id="bright-links" style="pointer-events:none">
+              <path class="arch-stream-path" data-bright="source-bronze" d="M 190 350 L 360 350"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="bronze-silver" d="M 480 350 L 540 350"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="silver-gold" d="M 660 350 L 720 350"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="gold-serve" d="M 840 350 L 1000 350"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="adf-meta" d="M 640 100 L 560 100"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="adf-bronze" d="M 720 130 L 720 160 L 420 160 L 420 280"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="adf-silver" d="M 720 130 L 720 160 L 600 160 L 600 280"
+                marker-end="url(#arrow-bright)"></path>
+              <path class="arch-stream-path" data-bright="adf-gold" d="M 720 130 L 720 160 L 780 160 L 780 280"
+                marker-end="url(#arrow-bright)"></path>
+            </g>
+
+            <!-- Traveling packets layer -->
+            <g id="packets-layer" style="pointer-events:none"></g>
+
+            <!-- Source Systems -->
+            <g data-node="source" class="arch-node" transform="translate(50, 280)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="140" height="140" rx="0" fill="#0A0A0A"
+                stroke="rgba(255,255,255,0.1)" stroke-width="1"></rect>
+              <text x="70" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Source Systems</text>
+              <rect x="20" y="112" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="70" y="124" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">REST / JDBC</text>
+              <g transform="translate(0, 40)" opacity="0.9">
+                <path d="M 45,20 L 65,20 L 65,45 L 45,45 Z" fill="none" stroke="#71717a" stroke-width="1"></path>
+                <line x1="45" y1="28" x2="65" y2="28" stroke="#71717a" stroke-width="1"></line>
+                <path d="M 75,30 L 85,20 L 95,30 L 85,40 Z" fill="none" stroke="#71717a" stroke-width="1"></path>
+                <circle cx="85" cy="30" r="2" fill="#71717a"></circle>
+              </g>
+            </g>
+            <!-- Raw Layer -->
+            <g data-node="bronze" class="arch-node" transform="translate(360, 280)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="120" height="140" rx="0" fill="#0A0A0A"
+                stroke="rgba(255,255,255,0.1)" stroke-width="1"></rect>
+              <text x="60" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Raw Layer</text>
+              <rect x="10" y="112" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="60" y="124" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">Parquet / JSON</text>
+              <g transform="translate(0, 40)" opacity="0.9">
+                <rect x="40" y="20" width="15" height="15" fill="none" stroke="#a1a1aa" stroke-width="1"></rect>
+                <rect x="65" y="15" width="12" height="12" fill="none" stroke="#a1a1aa" stroke-width="1"></rect>
+                <rect x="50" y="38" width="18" height="10" fill="none" stroke="#a1a1aa" stroke-width="1"></rect>
+                <rect x="70" y="30" width="10" height="18" fill="none" stroke="#a1a1aa" stroke-width="1"></rect>
+              </g>
+            </g>
+            <!-- Curated Layer -->
+            <g data-node="silver" class="arch-node" transform="translate(540, 280)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="120" height="140" rx="0" fill="#0A0A0A"
+                stroke="rgba(255,255,255,0.1)" stroke-width="1"></rect>
+              <text x="60" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Curated Layer</text>
+              <rect x="10" y="112" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="60" y="124" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">Delta Lake</text>
+              <g transform="translate(0, 40)" opacity="0.9">
+                <rect x="35" y="15" width="50" height="40" fill="none" stroke="#d4d4d8" stroke-width="1"></rect>
+                <line x1="35" y1="28" x2="85" y2="28" stroke="#d4d4d8" stroke-width="1"></line>
+                <line x1="35" y1="41" x2="85" y2="41" stroke="#d4d4d8" stroke-width="1"></line>
+                <line x1="60" y1="15" x2="60" y2="55" stroke="#d4d4d8" stroke-width="1"></line>
+              </g>
+            </g>
+            <!-- Semantic Layer -->
+            <g data-node="gold" class="arch-node" transform="translate(720, 280)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="120" height="140" rx="0" fill="#0A0A0A"
+                stroke="rgba(255,255,255,0.1)" stroke-width="1"></rect>
+              <text x="60" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Semantic Layer</text>
+              <rect x="10" y="112" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="60" y="124" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">Star Schema</text>
+              <g transform="translate(0, 40)" opacity="0.9">
+                <rect x="52" y="28" width="16" height="16" fill="none" stroke="#f4f4f5" stroke-width="1.5"></rect>
+                <rect x="35" y="15" width="10" height="10" fill="none" stroke="#f4f4f5" stroke-width="1"></rect>
+                <rect x="75" y="15" width="10" height="10" fill="none" stroke="#f4f4f5" stroke-width="1"></rect>
+                <rect x="35" y="45" width="10" height="10" fill="none" stroke="#f4f4f5" stroke-width="1"></rect>
+                <rect x="75" y="45" width="10" height="10" fill="none" stroke="#f4f4f5" stroke-width="1"></rect>
+                <line x1="52" y1="28" x2="45" y2="25" stroke="#f4f4f5" stroke-width="0.5"></line>
+                <line x1="68" y1="28" x2="75" y2="25" stroke="#f4f4f5" stroke-width="0.5"></line>
+                <line x1="52" y1="44" x2="45" y2="45" stroke="#f4f4f5" stroke-width="0.5"></line>
+                <line x1="68" y1="44" x2="75" y2="45" stroke="#f4f4f5" stroke-width="0.5"></line>
+              </g>
+            </g>
+            <!-- Analytics & AI -->
+            <g data-node="serve" class="arch-node" transform="translate(1000, 280)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="140" height="140" rx="0" fill="#0A0A0A"
+                stroke="rgba(255,255,255,0.1)" stroke-width="1"></rect>
+              <text x="70" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Analytics &amp; AI</text>
+              <rect x="20" y="112" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="70" y="124" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">BI / API</text>
+              <g transform="translate(0, 40)" opacity="0.9">
+                <rect x="45" y="15" width="20" height="15" fill="none" stroke="#fff" stroke-width="1"></rect>
+                <rect x="75" y="15" width="20" height="15" fill="none" stroke="#fff" stroke-width="1"></rect>
+                <rect x="45" y="35" width="50" height="15" fill="none" stroke="#fff" stroke-width="1"></rect>
+                <path d="M 50,45 L 65,40 L 75,42 L 90,38" fill="none" stroke="#fff" stroke-width="1"></path>
+              </g>
+            </g>
+            <!-- Metadata Store -->
+            <g data-node="meta" class="arch-node" transform="translate(400, 70)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="160" height="60" rx="0" fill="#0A0A0A" stroke="rgba(255,255,255,0.1)"
+                stroke-width="1"></rect>
+              <text x="80" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Metadata Store</text>
+              <rect x="30" y="32" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="80" y="44" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">Relational DB</text>
+            </g>
+            <!-- Orchestration Engine -->
+            <g data-node="adf" class="arch-node" transform="translate(640, 70)" style="cursor:pointer">
+              <rect class="arch-node-frame" width="160" height="60" rx="0" fill="#0A0A0A" stroke="rgba(255,255,255,0.1)"
+                stroke-width="1"></rect>
+              <text x="80" y="30" text-anchor="middle" fill="#fff" font-size="13" font-weight="300"
+                style="letter-spacing:-0.02em">Orchestration Engine</text>
+              <rect x="30" y="32" width="100" height="18" rx="0" fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.08)" stroke-width="1"></rect>
+              <text x="80" y="44" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" class="mono"
+                style="text-transform:uppercase;letter-spacing:0.12em">Pipeline Runner</text>
+            </g>
+          </svg>
+          <!-- Hover tooltip -->
+          <div id="arch-tooltip">
+            <span id="arch-tooltip-label" class="mono"
+              style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.5);display:block;margin-bottom:6px"></span>
+            <p id="arch-tooltip-desc" style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.7);margin:0;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+     CAPABILITIES CAROUSEL
+     ═══════════════════════════════════════════════════════ -->
+  <section class="capabilities-section" id="capabilities">
+    <div class="capabilities-sticky">
+      <div class="carousel-header-wrap">
+        <div class="reveal">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+            <span class="section-label">02 / System Capabilities</span>
+            <span class="section-label-line"></span>
+          </div>
+          <h2
+            style="font-size:clamp(2.4rem,5.6vw,5.6rem);font-weight:100;letter-spacing:-0.05em;text-transform:uppercase;line-height:0.92;">
+            Engineered for<br><span class="section-heading-bold">Scale.</span>
+          </h2>
+        </div>
+        <!-- Carousel Controls -->
+        <div class="carousel-controls reveal">
+          <span class="carousel-counter mono"><span id="carousel-current">01</span> / 05</span>
+          <button id="carousel-prev" class="carousel-btn" aria-label="Previous capability">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button id="carousel-next" class="carousel-btn" aria-label="Next capability">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Carousel Viewport & Track -->
+      <div class="carousel-viewport" id="capabilities-viewport">
+        <div class="carousel-track" id="capabilities-track">
+          <!-- Card 1: Data Engineering -->
+          <a href="#start-project" class="cap-card" data-card="0">
+            <div class="cap-card-inner">
+              <div class="cap-card-top">
+                <span class="cap-card-num">01</span>
+                <div class="cap-card-tags">
+                  <span class="cap-card-tag">Databricks</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Microsoft Fabric</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Azure Data Factory</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>dbt</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Delta Lake</span>
+                </div>
+              </div>
+              <div class="cap-card-body">
+                <div class="cap-card-title">Data Engineering</div>
+                <p class="cap-card-desc">Reliable batch and streaming pipelines, governed lakehouses, and trusted data
+                  for reporting and AI.</p>
+              </div>
+              <span class="cap-card-explore">
+                Explore
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </span>
+              <span class="cap-card-watermark" aria-hidden="true">01</span>
+            </div>
+          </a>
+
+          <!-- Card 2: AI Engineering -->
+          <a href="#start-project" class="cap-card" data-card="1">
+            <div class="cap-card-inner">
+              <div class="cap-card-top">
+                <span class="cap-card-num">02</span>
+                <div class="cap-card-tags">
+                  <span class="cap-card-tag">LLM Agents</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>RAG</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>MCP</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Evaluation</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Observability</span>
+                </div>
+              </div>
+              <div class="cap-card-body">
+                <div class="cap-card-title">AI Engineering</div>
+                <p class="cap-card-desc">Production AI systems with permission-aware retrieval, controlled agent
+                  workflows, evaluation and observability.</p>
+              </div>
+              <span class="cap-card-explore">
+                Explore
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </span>
+              <span class="cap-card-watermark" aria-hidden="true">02</span>
+            </div>
+          </a>
+
+          <!-- Card 3: Analytics -->
+          <a href="#start-project" class="cap-card" data-card="2">
+            <div class="cap-card-inner">
+              <div class="cap-card-top">
+                <span class="cap-card-num">03</span>
+                <div class="cap-card-tags">
+                  <span class="cap-card-tag">Power BI</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Semantic Models</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>TMDL</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>DAX</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Fabric</span>
+                </div>
+              </div>
+              <div class="cap-card-body">
+                <div class="cap-card-title">Analytics</div>
+                <p class="cap-card-desc">One governed semantic model behind every report. Power BI structures that end
+                  fragmented business logic for good.</p>
+              </div>
+              <span class="cap-card-explore">
+                Explore
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </span>
+              <span class="cap-card-watermark" aria-hidden="true">03</span>
+            </div>
+          </a>
+
+          <!-- Card 4: Migration -->
+          <a href="#start-project" class="cap-card" data-card="3">
+            <div class="cap-card-inner">
+              <div class="cap-card-top">
+                <span class="cap-card-num">04</span>
+                <div class="cap-card-tags">
+                  <span class="cap-card-tag">Synapse to Databricks</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>SSRS to Power BI</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>AI-accelerated</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Validation</span>
+                </div>
+              </div>
+              <div class="cap-card-body">
+                <div class="cap-card-title">Migration</div>
+                <p class="cap-card-desc">AI recovers the intent in legacy code, engineers verify, and the new platform
+                  ships battle-tested from day one.</p>
+              </div>
+              <span class="cap-card-explore">
+                Explore
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </span>
+              <span class="cap-card-watermark" aria-hidden="true">04</span>
+            </div>
+          </a>
+
+          <!-- Card 5: Managed Services -->
+          <a href="#start-project" class="cap-card" data-card="4">
+            <div class="cap-card-inner">
+              <div class="cap-card-top">
+                <span class="cap-card-num">05</span>
+                <div class="cap-card-tags">
+                  <span class="cap-card-tag">SLA Guarantees</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>24/7 Telemetry</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Cost Optimization</span>
+                  <span class="cap-card-tag"><span class="cap-card-tag-dot"></span>Platform Ops</span>
+                </div>
+              </div>
+              <div class="cap-card-body">
+                <div class="cap-card-title">Managed Services</div>
+                <p class="cap-card-desc">Continuous monitoring, cost governance, incident response, and performance
+                  tuning for production data and AI estates.</p>
+              </div>
+              <span class="cap-card-explore">
+                Explore
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10"></path>
+                  <path d="M7 17 17 7"></path>
+                </svg>
+              </span>
+              <span class="cap-card-watermark" aria-hidden="true">05</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Carousel Timeline Track Indicator -->
+      <div class="carousel-timeline-container reveal">
+        <div class="carousel-timeline-rail">
+          <div class="carousel-timeline-fill" id="carousel-timeline-fill"></div>
+        </div>
+        <ol class="carousel-timeline-steps">
+          <li class="carousel-timeline-step is-active" data-index="0">
+            <span class="mono">01</span>
+            <span class="step-name">Data Engineering</span>
+          </li>
+          <li class="carousel-timeline-step" data-index="1">
+            <span class="mono">02</span>
+            <span class="step-name">AI Engineering</span>
+          </li>
+          <li class="carousel-timeline-step" data-index="2">
+            <span class="mono">03</span>
+            <span class="step-name">Analytics</span>
+          </li>
+          <li class="carousel-timeline-step" data-index="3">
+            <span class="mono">04</span>
+            <span class="step-name">Migration</span>
+          </li>
+          <li class="carousel-timeline-step" data-index="4">
+            <span class="mono">05</span>
+            <span class="step-name">Managed Services</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+     ENGAGEMENT TIMELINE & START PROJECT
+     ═══════════════════════════════════════════════════════ -->
+  <section class="timeline-section" id="start-project">
+    <div class="reveal">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+        <span class="section-label">03 / Engagement Process</span>
+        <span class="section-label-line"></span>
+      </div>
+      <h2
+        style="font-size:clamp(2.4rem,5.6vw,5.6rem);font-weight:100;letter-spacing:-0.05em;text-transform:uppercase;line-height:0.92;">
+        From Discovery<br><span class="section-heading-bold">To Sovereignty.</span>
+      </h2>
+      <p style="margin-top:1.25rem;max-width:540px;color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;">
+        Every engagement follows a strictly governed timeline. We design, scaffold, engineer, and hand over complete
+        operational control to your team.
+      </p>
+    </div>
+
+    <div class="timeline-grid">
+      <!-- Left: Interactive Delivery Timeline Track -->
+      <div class="timeline-track reveal" id="engagement-timeline">
+        <!-- Phase 1: Discovery -->
+        <div class="timeline-phase is-active" data-phase="0">
+          <div class="timeline-phase-header">
+            <span class="timeline-phase-num mono">PHASE 01</span>
+            <span class="timeline-phase-duration mono">WEEKS 1 – 2</span>
+          </div>
+          <h3 class="timeline-phase-title">Discovery &amp; Architectural Audit</h3>
+          <p class="timeline-phase-desc">
+            We begin by aggressively interrogating your objectives, constraints, and data estate. We audit legacy
+            sources, governance gaps, and formulate an executable blueprint with clear KPIs.
+          </p>
+          <div class="timeline-deliverables">
+            <span class="timeline-pill">System Architecture Blueprint</span>
+            <span class="timeline-pill">Data Contract Specs</span>
+            <span class="timeline-pill">Security &amp; Compliance Matrix</span>
+            <span class="timeline-pill">Cost Modeling</span>
+          </div>
+        </div>
+
+        <!-- Phase 2: Architecture & Foundation -->
+        <div class="timeline-phase" data-phase="1">
+          <div class="timeline-phase-header">
+            <span class="timeline-phase-num mono">PHASE 02</span>
+            <span class="timeline-phase-duration mono">WEEKS 3 – 4</span>
+          </div>
+          <h3 class="timeline-phase-title">Platform &amp; Core Scaffolding</h3>
+          <p class="timeline-phase-desc">
+            We construct future-proof foundation infrastructure. We establish Infrastructure-as-Code, Unity Catalog or
+            Microsoft Fabric workspaces, automated CI/CD pipelines, and secure networking.
+          </p>
+          <div class="timeline-deliverables">
+            <span class="timeline-pill">Terraform Cloud IaC</span>
+            <span class="timeline-pill">Unity Catalog / Fabric Workspace</span>
+            <span class="timeline-pill">Automated GitHub CI/CD</span>
+            <span class="timeline-pill">Raw Storage Perimeters</span>
+          </div>
+        </div>
+
+        <!-- Phase 3: Execution & Build -->
+        <div class="timeline-phase" data-phase="2">
+          <div class="timeline-phase-header">
+            <span class="timeline-phase-num mono">PHASE 03</span>
+            <span class="timeline-phase-duration mono">WEEKS 5 – 8</span>
+          </div>
+          <h3 class="timeline-phase-title">Rigorous Engineering &amp; AI Integration</h3>
+          <p class="timeline-phase-desc">
+            We write, build, test, and integrate with mathematical rigor. We deploy production streaming and batch Delta
+            Lake pipelines, star schemas, semantic layers, and observable AI systems.
+          </p>
+          <div class="timeline-deliverables">
+            <span class="timeline-pill">Delta Lake Medallion Pipelines</span>
+            <span class="timeline-pill">Power BI Semantic Models</span>
+            <span class="timeline-pill">Vector Search &amp; Model Serving</span>
+            <span class="timeline-pill">Automated Quality Gates</span>
+          </div>
+        </div>
+
+        <!-- Phase 4: Sovereignty & Handover -->
+        <div class="timeline-phase" data-phase="3">
+          <div class="timeline-phase-header">
+            <span class="timeline-phase-num mono">PHASE 04</span>
+            <span class="timeline-phase-duration mono">WEEKS 9+</span>
+          </div>
+          <h3 class="timeline-phase-title">Operational Sovereignty &amp; Cutover</h3>
+          <p class="timeline-phase-desc">
+            Post-launch, we don't just walk away. We perform live shadow testing, tune cluster cost performance, and
+            rigorously upskill your engineers so you own 100% of the platform and future.
+          </p>
+          <div class="timeline-deliverables">
+            <span class="timeline-pill">Full Repository Handover</span>
+            <span class="timeline-pill">24/7 Telemetry Dashboards</span>
+            <span class="timeline-pill">Runbooks &amp; Operator Manuals</span>
+            <span class="timeline-pill">Team Enablement Workshops</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Start Project Consultation Card -->
+      <div class="start-project-card reveal">
+        <div>
+          <span class="mono"
+            style="font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.45);display:block;margin-bottom:0.75rem;">DIRECT
+            LINE / ENGAGEMENT</span>
+          <h3 class="start-project-title">
+            Bring the complexity.<br><span>Let’s build.</span>
+          </h3>
+          <p class="start-project-desc" style="margin-top:0.75rem;">
+            Data platforms, analytics and AI. Tell us what needs to work better, and our engineering leads will prepare
+            an architecture brief.
+          </p>
+        </div>
+
+        <form class="project-form" id="project-intake-form" onsubmit="return false;">
+          <div class="form-group">
+            <label class="form-label">Primary Objective</label>
+            <div class="form-tags" id="scope-tags">
+              <span class="scope-tag is-selected" data-value="data-engineering">Data Engineering</span>
+              <span class="scope-tag" data-value="ai-systems">AI Systems &amp; Agents</span>
+              <span class="scope-tag" data-value="analytics">Analytics &amp; Power BI</span>
+              <span class="scope-tag" data-value="migration">Platform Migration</span>
+              <span class="scope-tag" data-value="managed">Managed Platform</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="client-name">Your Name</label>
+            <input type="text" id="client-name" class="form-input" placeholder="Alex Morgan" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="client-email">Work Email</label>
+            <input type="email" id="client-email" class="form-input" placeholder="alex@enterprise.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="client-brief">Project Brief &amp; Current Stack</label>
+            <textarea id="client-brief" class="form-textarea" rows="3"
+              placeholder="Current systems (Databricks, Fabric, Snowflake), data volume, and key delivery deadlines..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit-project" id="btn-submit-project">
+            <span>Transmit Project Brief</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          </button>
+
+          <div class="submit-success-msg" id="submit-success-msg">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span class="mono"
+                style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#22c55e;">BRIEF
+                TRANSMITTED</span>
+            </div>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0;">
+              Thank you. Our principal architects will review your requirements and respond with a scoped delivery plan
+              within 24 hours.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════ -->
+  <footer id="contact">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg viewBox="0 0 40 40" width="32" height="32" fill="none" aria-hidden="true" style="flex-shrink:0;">
+          <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+          <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+          <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+          <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+        </svg>
+        <span>einsum</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Services</a>
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Careers</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+      </div>
+      <div class="footer-copy mono">© 2026 einsum</div>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════ -->
+  <script>
+    // ── WebGL Liquid Shader (extracted from einsum source) ─────
+    (function () {
+      const canvas = document.getElementById('fluid-canvas');
+      if (!canvas) return;
+
+      const gl = canvas.getContext('webgl', {
+        antialias: false,
+        alpha: false,
+        depth: false,
+        stencil: false,
+        powerPreference: 'high-performance'
+      });
+      if (!gl) return;
+
+      // ── GLSL Shaders ──────────────────────────────────────
+      const vertexSrc = `
+    attribute vec2 position;
+    void main() {
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
+
+      const fragmentSrc = `
+    precision highp float;
+
+    uniform float uTime;
+    uniform vec2 uResolution;
+    uniform vec2 uMouse;
+    uniform float uScroll;
+    uniform float uVelocity;
+    uniform float uPointerVel;
+
+    // Simplex 2D noise
+    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+               -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy));
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+      + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+        dot(x12.zw,x12.zw)), 0.0);
+      m = m*m;
+      m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
+    // Fbm layering for organic structure
+    float fbm(vec2 x) {
+      float v = 0.0;
+      float a = 0.5;
+      vec2 shift = vec2(100.0);
+      mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+      for (int i = 0; i < 3; ++i) {
+        v += a * snoise(x);
+        x = rot * x * 2.0 + shift;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / uResolution.xy;
+      vec2 p = uv * 2.0 - 1.0;
+      p.x *= uResolution.x / uResolution.y;
+
+      vec2 mouseP = uMouse;
+      float dist = length(p - mouseP);
+      float mousePull = exp(-dist * 1.5) * (0.5 + uPointerVel * 0.55);
+
+      float t = uTime * 0.15;
+
+      vec2 q = vec2(0.);
+      q.x = fbm( p + 0.00*t );
+      q.y = fbm( p + vec2(1.0) );
+
+      vec2 r = vec2(0.);
+      r.x = fbm( p + 1.0*q + vec2(1.7,9.2) + 0.15*t + (mouseP.x * mousePull) );
+      r.y = fbm( p + 1.0*q + vec2(8.3,2.8) + 0.126*t + (mouseP.y * mousePull) );
+
+      float f = fbm(p + r + (uScroll * 0.2));
+
+      vec3 colorBase = vec3(0.02, 0.02, 0.03);
+      vec3 colorMid = vec3(0.08, 0.12, 0.15);
+      vec3 colorHigh = vec3(0.4, 0.5, 0.6);
+
+      vec3 color = mix(colorBase, colorMid, clamp((f*f)*4.0, 0.0, 1.0));
+      color = mix(color, colorHigh, clamp(length(q)*length(r)*f, 0.0, 1.0) * (0.6 + mousePull * 0.4));
+
+      float v = smoothstep(2.5, 0.1, length(p));
+
+      float edge = smoothstep(0.4, 0.5, f) - smoothstep(0.5, 0.6, f);
+      color += vec3(0.2, 0.3, 0.4) * edge * (0.5 + uVelocity * 0.1);
+
+      color *= (0.4 + 0.6 * v);
+
+      float bottomFade = smoothstep(0.0, 0.2, uv.y);
+      color *= bottomFade;
+
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+      // ── Compile & Link ────────────────────────────────────
+      function createShader(type, src) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.error(gl.getShaderInfoLog(s));
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      const vs = createShader(gl.VERTEX_SHADER, vertexSrc);
+      const fs = createShader(gl.FRAGMENT_SHADER, fragmentSrc);
+      if (!vs || !fs) return;
+
+      const program = gl.createProgram();
+      gl.attachShader(program, vs);
+      gl.attachShader(program, fs);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+        return;
+      }
+      gl.useProgram(program);
+
+      // ── Geometry (fullscreen quad) ────────────────────────
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      const pos = gl.getAttribLocation(program, 'position');
+      gl.enableVertexAttribArray(pos);
+      gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+      // ── Uniform locations ─────────────────────────────────
+      const uTime = gl.getUniformLocation(program, 'uTime');
+      const uResolution = gl.getUniformLocation(program, 'uResolution');
+      const uMouse = gl.getUniformLocation(program, 'uMouse');
+      const uScroll = gl.getUniformLocation(program, 'uScroll');
+      const uVelocity = gl.getUniformLocation(program, 'uVelocity');
+      const uPointerVel = gl.getUniformLocation(program, 'uPointerVel');
+
+      // ── State ─────────────────────────────────────────────
+      let smoothMouse = { x: 0, y: 0 };
+      let rawMouse = { x: 0, y: 0 };
+      let pointerVel = 0;
+      let scrollVel = 0;
+      let lastGx = 0, lastGy = 0;
+      let lastScrollY = window.scrollY;
+      let scrollAccum = 0;
+      let scale = 1;
+      let W = 0, H = 0;
+      const startTime = performance.now();
+
+      // ── Listeners ─────────────────────────────────────────
+      window.addEventListener('pointermove', function (e) {
+        const nx = e.clientX / window.innerWidth * 2 - 1;
+        const ny = -(e.clientY / window.innerHeight * 2 - 1);
+        rawMouse.x = nx * window.innerWidth / window.innerHeight;
+        rawMouse.y = ny;
+        pointerVel = Math.min(pointerVel + 6 * Math.hypot(nx - lastGx, ny - lastGy), 1);
+        lastGx = nx;
+        lastGy = ny;
+      }, { passive: true });
+
+      window.addEventListener('scroll', function () {
+        const sy = window.scrollY;
+        scrollVel = Math.min(scrollVel + Math.abs(sy - lastScrollY) / 220, 1);
+        lastScrollY = sy;
+      }, { passive: true });
+
+      function resize() {
+        W = Math.max(1, Math.round(canvas.clientWidth));
+        H = Math.max(1, Math.round(canvas.clientHeight));
+        scale = Math.min(1, Math.sqrt(1600000 / (W * H)));
+        const rW = Math.max(1, Math.round(W * scale));
+        const rH = Math.max(1, Math.round(H * scale));
+        if (canvas.width !== rW || canvas.height !== rH) {
+          canvas.width = rW;
+          canvas.height = rH;
+          gl.viewport(0, 0, rW, rH);
+        }
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // ── Render loop ───────────────────────────────────────
+      let lastFrame = performance.now();
+
+      function frame(now) {
+        requestAnimationFrame(frame);
+
+        const dt = Math.min(0.05, (now - lastFrame) / 1000);
+        lastFrame = now;
+
+        // Smooth the mouse
+        smoothMouse.x += (rawMouse.x - smoothMouse.x) * 0.05;
+        smoothMouse.y += (rawMouse.y - smoothMouse.y) * 0.05;
+
+        // Decay velocities
+        const decay = Math.exp(-2.2 * dt);
+        scrollVel *= decay;
+        pointerVel *= decay;
+        scrollAccum += 0.001;
+
+        // Resize check
+        resize();
+
+        // Draw
+        gl.uniform1f(uTime, (now - startTime) / 1000);
+        gl.uniform2f(uResolution, canvas.width, canvas.height);
+        gl.uniform2f(uMouse, smoothMouse.x, smoothMouse.y);
+        gl.uniform1f(uScroll, scrollAccum);
+        gl.uniform1f(uVelocity, scrollVel);
+        gl.uniform1f(uPointerVel, pointerVel);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+
+      requestAnimationFrame(frame);
+    })();
+
+    // ── Scroll reveal animations ────────────────────────────
+    (function () {
+      const els = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      els.forEach(function (el) { observer.observe(el); });
+    })();
+
+    // ── Header scroll state ─────────────────────────────────
+    (function () {
+      const navBar = document.querySelector('.nav-bar');
+      let ticking = false;
+      function onScroll() {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            if (window.scrollY > 80) {
+              navBar.classList.add('scrolled');
+            } else {
+              navBar.classList.remove('scrolled');
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll(); // check initial state
+    })();
+
+    // ── Manifesto scroll-driven text highlight ──────────────
+    (function () {
+      const section = document.getElementById('manifesto-section');
+      const words = document.querySelectorAll('#manifesto-text .mword');
+      const progressBar = document.getElementById('manifesto-progress');
+      if (!section || !words.length) return;
+
+      let ticking = false;
+      function update() {
+        const rect = section.getBoundingClientRect();
+        const sectionHeight = section.offsetHeight;
+        const viewH = window.innerHeight;
+        // progress: 0 when the section top hits the viewport top,
+        //           1 when the section bottom hits the viewport bottom
+        const scrolled = -rect.top;
+        const totalScroll = sectionHeight - viewH;
+        const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
+
+        // Update progress bar
+        if (progressBar) {
+          progressBar.style.transform = 'scaleX(' + progress + ')';
+        }
+
+        // Light up words based on progress
+        const totalWords = words.length;
+        const litCount = Math.floor(progress * totalWords);
+        for (let i = 0; i < totalWords; i++) {
+          if (i < litCount) {
+            words[i].classList.add('lit');
+          } else {
+            words[i].classList.remove('lit');
+          }
+        }
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      }, { passive: true });
+      update(); // initial
+    })();
+
+    // ── Neural Core Diagram: Interactive Arrows & Node Hover ─
+    (function () {
+      const svg = document.getElementById('arch-svg');
+      const diagram = document.querySelector('.arch-diagram');
+      const tooltip = document.getElementById('arch-tooltip');
+      const tooltipLabel = document.getElementById('arch-tooltip-label');
+      const tooltipDesc = document.getElementById('arch-tooltip-desc');
+      const packetsLayer = document.getElementById('packets-layer');
+      if (!svg || !diagram) return;
+
+      const nodeElements = svg.querySelectorAll('.arch-node');
+      const streamPaths = svg.querySelectorAll('.arch-stream-path');
+      const stepElements = document.querySelectorAll('.arch-step');
+
+      const nodeData = {
+        source: {
+          label: '01 / INGESTION LAYER',
+          desc: 'Automated CDC and batch connectors ingest from ERP, CRM, APIs, and transactional databases with zero data-loss guarantees.',
+          links: ['source-bronze'],
+          step: 'ingest'
+        },
+        bronze: {
+          label: '02 / RAW STORAGE (BRONZE)',
+          desc: 'Immutable append-only raw data landing zone in cloud object storage. Native Parquet format preserving exact source fidelity.',
+          links: ['source-bronze', 'bronze-silver', 'adf-bronze'],
+          step: 'ingest'
+        },
+        silver: {
+          label: '03 / CURATED DELTA (SILVER)',
+          desc: 'Enriched, deduplicated, and cleansed tables with ACID transactions, time travel, and schema enforcement via Delta Lake.',
+          links: ['bronze-silver', 'silver-gold', 'adf-silver'],
+          step: 'refine'
+        },
+        gold: {
+          label: '04 / SEMANTIC CORE (GOLD)',
+          desc: 'Aggregated dimensional models, star schemas, and business metrics optimized for high-concurrency, sub-second query performance.',
+          links: ['silver-gold', 'gold-serve', 'adf-gold'],
+          step: 'serve'
+        },
+        serve: {
+          label: '05 / CONSUMPTION & AI (SERVE)',
+          desc: 'Enterprise BI dashboards, real-time API endpoints, vector embeddings, and LLM reasoning engines querying governed data.',
+          links: ['gold-serve'],
+          step: 'serve'
+        },
+        meta: {
+          label: 'CONTROL / METADATA & GOVERNANCE',
+          desc: 'Central catalog, data lineage tracker, and access control policies ensuring enterprise-grade data governance and compliance.',
+          links: ['adf-meta'],
+          step: 'govern'
+        },
+        adf: {
+          label: 'CONTROL / ORCHESTRATION ENGINE',
+          desc: 'Event-driven pipeline runner, automated dependency management, and monitoring driving multi-layer data transformations.',
+          links: ['adf-meta', 'adf-bronze', 'adf-silver', 'adf-gold'],
+          step: 'govern'
+        }
+      };
+
+      const stepMapping = {
+        ingest: { nodes: ['source', 'bronze'], links: ['source-bronze'], label: '01 / INGEST', desc: 'Every source lands raw and immutable. Nothing is lost, nothing is trusted yet.' },
+        refine: { nodes: ['bronze', 'silver'], links: ['bronze-silver'], label: '02 / REFINE', desc: 'Cleansed, deduplicated, modelled. One schema the whole company can read.' },
+        serve: { nodes: ['gold', 'serve'], links: ['gold-serve'], label: '03 / SERVE', desc: 'Dashboards, models and agents draw from the same governed products.' },
+        govern: { nodes: ['adf', 'meta'], links: ['adf-meta', 'adf-bronze', 'adf-silver', 'adf-gold'], label: '04 / GOVERN', desc: 'Metadata drives orchestration. Every run is traceable, every change is versioned.' }
+      };
+
+      // Traveling packets animation
+      let activePacketPaths = [];
+      let animFrameId = null;
+      let animStart = performance.now();
+
+      function spawnPackets(linkKeys) {
+        if (!packetsLayer) return;
+        packetsLayer.innerHTML = '';
+        activePacketPaths = [];
+
+        linkKeys.forEach(function (key) {
+          const pathEl = svg.querySelector('path[data-bright="' + key + '"]');
+          if (pathEl && pathEl.getTotalLength) {
+            const length = pathEl.getTotalLength();
+            // Create 2 glowing packet pulses per active link
+            for (let i = 0; i < 2; i++) {
+              const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              circle.setAttribute('r', '3.5');
+              circle.setAttribute('fill', '#ffffff');
+              circle.style.filter = 'drop-shadow(0 0 6px #ffffff)';
+              packetsLayer.appendChild(circle);
+              activePacketPaths.push({
+                path: pathEl,
+                circle: circle,
+                length: length,
+                speed: 0.00065,
+                offset: i * 0.5
+              });
+            }
+          }
+        });
+
+        if (activePacketPaths.length > 0 && !animFrameId) {
+          animStart = performance.now();
+          animFrameId = requestAnimationFrame(animatePackets);
+        }
+      }
+
+      function stopPackets() {
+        if (animFrameId) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = null;
+        }
+        if (packetsLayer) packetsLayer.innerHTML = '';
+        activePacketPaths = [];
+      }
+
+      function animatePackets(now) {
+        const elapsed = now - animStart;
+        activePacketPaths.forEach(function (item) {
+          const progress = (elapsed * item.speed + item.offset) % 1;
+          const pt = item.path.getPointAtLength(progress * item.length);
+          item.circle.setAttribute('cx', pt.x);
+          item.circle.setAttribute('cy', pt.y);
+        });
+        animFrameId = requestAnimationFrame(animatePackets);
+      }
+
+      // Activate specific nodes & links
+      function activateElements(activeNodeKeys, activeLinkKeys, tooltipInfo) {
+        // Nodes
+        nodeElements.forEach(function (node) {
+          const key = node.getAttribute('data-node');
+          if (activeNodeKeys.indexOf(key) !== -1) {
+            node.classList.add('is-active');
+            node.classList.remove('is-dimmed');
+          } else {
+            node.classList.remove('is-active');
+            node.classList.add('is-dimmed');
+          }
+        });
+
+        // Links
+        streamPaths.forEach(function (path) {
+          const key = path.getAttribute('data-bright');
+          if (activeLinkKeys.indexOf(key) !== -1) {
+            path.classList.add('is-active');
+            path.classList.remove('is-dimmed');
+          } else {
+            path.classList.remove('is-active');
+            path.classList.add('is-dimmed');
+          }
+        });
+
+        // Tooltip
+        if (tooltip && tooltipInfo) {
+          if (tooltipLabel) tooltipLabel.textContent = tooltipInfo.label || '';
+          if (tooltipDesc) tooltipDesc.textContent = tooltipInfo.desc || '';
+          tooltip.classList.add('is-visible');
+        }
+
+        // Spawn animated traveling pulses
+        spawnPackets(activeLinkKeys);
+      }
+
+      // Reset to default ambient state
+      function resetElements() {
+        nodeElements.forEach(function (node) {
+          node.classList.remove('is-active', 'is-dimmed');
+        });
+        streamPaths.forEach(function (path) {
+          path.classList.remove('is-active', 'is-dimmed');
+        });
+        stepElements.forEach(function (step) {
+          step.classList.remove('is-active');
+        });
+        if (tooltip) {
+          tooltip.classList.remove('is-visible');
+        }
+        stopPackets();
+      }
+
+      // Bind node hover
+      nodeElements.forEach(function (node) {
+        const key = node.getAttribute('data-node');
+        const data = nodeData[key];
+        if (!data) return;
+
+        node.addEventListener('mouseenter', function () {
+          // Highlight matching step on left
+          stepElements.forEach(function (s) {
+            if (s.getAttribute('data-step') === data.step) {
+              s.classList.add('is-active');
+            } else {
+              s.classList.remove('is-active');
+            }
+          });
+          activateElements([key], data.links, { label: data.label, desc: data.desc });
+        });
+
+        node.addEventListener('mouseleave', function () {
+          resetElements();
+        });
+      });
+
+      // Bind step hover (on left column)
+      stepElements.forEach(function (step) {
+        const stepKey = step.getAttribute('data-step');
+        const mapping = stepMapping[stepKey];
+        if (!mapping) return;
+
+        step.addEventListener('mouseenter', function () {
+          stepElements.forEach(function (s) { s.classList.remove('is-active'); });
+          step.classList.add('is-active');
+          activateElements(mapping.nodes, mapping.links, { label: mapping.label, desc: mapping.desc });
+        });
+
+        step.addEventListener('mouseleave', function () {
+          resetElements();
+        });
+      });
+
+      // When mouse leaves the diagram completely
+      diagram.addEventListener('mouseleave', function () {
+        resetElements();
+      });
+    })();
+
+    // ── Capabilities Scroll-Driven Carousel Controller ───────
+    (function () {
+      const section = document.getElementById('capabilities');
+      const track = document.getElementById('capabilities-track');
+      const prevBtn = document.getElementById('carousel-prev');
+      const nextBtn = document.getElementById('carousel-next');
+      const counterEl = document.getElementById('carousel-current');
+      const fillEl = document.getElementById('carousel-timeline-fill');
+      const stepItems = document.querySelectorAll('.carousel-timeline-step');
+      if (!section || !track) return;
+
+      const cards = track.querySelectorAll('.cap-card');
+      const total = cards.length;
+      let currentIndex = 0;
+      let ticking = false;
+
+      function update() {
+        const rect = section.getBoundingClientRect();
+        const scrollDistance = section.offsetHeight - window.innerHeight;
+        if (scrollDistance <= 0) {
+          ticking = false;
+          return;
+        }
+
+        // progress: 0 when section top hits viewport top, 1 when section bottom hits viewport bottom
+        const scrolled = -rect.top;
+        const progress = Math.max(0, Math.min(1, scrolled / scrollDistance));
+
+        // Calculate maximum horizontal travel distance
+        const trackWidth = track.scrollWidth;
+        const viewportWidth = window.innerWidth;
+        const padding = viewportWidth < 768 ? 24 : 64;
+        const maxTranslate = Math.max(0, trackWidth - viewportWidth + padding);
+
+        const currentX = progress * maxTranslate;
+        track.style.transform = 'translate3d(-' + currentX + 'px, 0, 0)';
+
+        // Update timeline indicator fill
+        if (fillEl) {
+          fillEl.style.transform = 'scaleX(' + Math.max(0.18, progress) + ')';
+        }
+
+        // Update active step and counter based on progress
+        const activeIdx = Math.min(total - 1, Math.floor(progress * total * 0.999));
+        if (activeIdx !== currentIndex) {
+          currentIndex = activeIdx;
+          if (counterEl) {
+            counterEl.textContent = '0' + (activeIdx + 1);
+          }
+          stepItems.forEach(function (item, i) {
+            if (i === activeIdx) {
+              item.classList.add('is-active');
+            } else {
+              item.classList.remove('is-active');
+            }
+          });
+        }
+
+        ticking = false;
+      }
+
+      function onScroll() {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update(); // initial state
+
+      // Navigate to a specific card smoothly by scrolling the page
+      function goToCard(idx) {
+        idx = Math.max(0, Math.min(total - 1, idx));
+        const targetProgress = total > 1 ? (idx / (total - 1)) : 0;
+        const scrollDistance = section.offsetHeight - window.innerHeight;
+        const sectionTop = window.scrollY + section.getBoundingClientRect().top;
+        const targetScrollY = sectionTop + targetProgress * scrollDistance;
+
+        window.scrollTo({
+          top: targetScrollY,
+          behavior: 'smooth'
+        });
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          goToCard(currentIndex - 1);
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          goToCard(currentIndex + 1);
+        });
+      }
+
+      stepItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+          const idx = parseInt(item.getAttribute('data-index'), 10);
+          if (!isNaN(idx)) goToCard(idx);
+        });
+      });
+    })();
+
+    // ── Engagement Delivery Timeline & Form Controller ───────
+    (function () {
+      const timeline = document.getElementById('engagement-timeline');
+      if (!timeline) return;
+
+      const phases = timeline.querySelectorAll('.timeline-phase');
+      phases.forEach(function (phase) {
+        phase.addEventListener('click', function () {
+          phases.forEach(function (p) { p.classList.remove('is-active'); });
+          phase.classList.add('is-active');
+        });
+      });
+
+      // Scope tags toggle
+      const scopeTags = document.querySelectorAll('#scope-tags .scope-tag');
+      scopeTags.forEach(function (tag) {
+        tag.addEventListener('click', function () {
+          tag.classList.toggle('is-selected');
+        });
+      });
+
+      // Project form submit
+      const form = document.getElementById('project-intake-form');
+      const submitBtn = document.getElementById('btn-submit-project');
+      const successMsg = document.getElementById('submit-success-msg');
+
+      if (form && submitBtn && successMsg) {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.pointerEvents = 'none';
+          submitBtn.querySelector('span').textContent = 'Transmitting...';
+
+          setTimeout(function () {
+            form.reset();
+            submitBtn.style.display = 'none';
+            successMsg.style.display = 'block';
+          }, 700);
+        });
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

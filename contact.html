@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="theme-color" content="#000000">
+  <title>Discuss Your Data &amp; AI Project | einsum</title>
+  <meta name="description" content="Talk to einsum about data engineering, AI systems, Databricks, Microsoft Fabric or Azure. Share your current platform, project goals and delivery constraints.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="css/modules.css">
+
+  <style>
+    /* ── Base Fonts & Variables ───────────────────────────── */
+    :root {
+      --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-inter);
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .font-mono { font-family: var(--font-mono); }
+    .font-sans { font-family: var(--font-inter); }
+
+    /* ── WebGL Fluid Background ──────────────────────────── */
+    #fluid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+    #fluid-bg canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+    #fluid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.025;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ── Navigation Shell ─────────────────────────────────── */
+    .nav-shell {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .nav-bar-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      pointer-events: auto;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 1240px;
+      height: 96px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 0;
+      transition: all 0.7s cubic-bezier(0.19,1,0.22,1);
+      will-change: max-width, height, background-color;
+    }
+    .nav-shell.scrolled .nav-bar-container {
+      max-width: 860px;
+      height: 56px;
+      margin-top: 12px;
+      background: rgba(20,20,20,0.72);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border-color: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 0 1.25rem;
+    }
+    .nav-shell.scrolled .nav-logo-svg {
+      height: 22px !important;
+    }
+    .nav-sound-wrapper {
+      transition: all 0.5s cubic-bezier(0.19,1,0.22,1);
+    }
+    .nav-shell.scrolled .nav-sound-wrapper {
+      display: none !important;
+    }
+    .nav-cta-btn {
+      transition: all 0.5s cubic-bezier(0.19,1,0.22,1);
+    }
+    .nav-shell.scrolled .nav-cta-btn {
+      border-radius: 9999px !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+
+    /* ── Hero Ink Reveal Transition ──────────────────────── */
+    [data-service-hero] [data-ink] {
+      --ink: -12;
+      transition: --ink 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    [data-service-hero].is-loaded [data-ink] {
+      --ink: 112;
+    }
+    [data-service-hero] [data-rule] {
+      transform: scaleX(0);
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    [data-service-hero].is-loaded [data-rule] {
+      transform: scaleX(1);
+    }
+    [data-service-hero] [data-rise] {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 1.1s cubic-bezier(0.19, 1, 0.22, 1) 0.3s, transform 1.1s cubic-bezier(0.19, 1, 0.22, 1) 0.3s;
+    }
+    [data-service-hero].is-loaded [data-rise] {
+      opacity: 0.75;
+      transform: translateY(0);
+    }
+
+    /* Fallback for mask image support */
+    .ink-mask-text {
+      -webkit-mask-image: linear-gradient(100deg, #000 calc(var(--ink) * 1%), transparent calc((var(--ink) + 12) * 1%));
+      mask-image: linear-gradient(100deg, #000 calc(var(--ink) * 1%), transparent calc((var(--ink) + 12) * 1%));
+    }
+
+    /* ── Timeline Animations & Interactive States ───────── */
+    .timeline-node-marker {
+      transition: background-color 0.5s ease, border-color 0.5s ease, transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .timeline-node-glow {
+      transition: opacity 0.6s ease;
+    }
+    .timeline-rule-line {
+      transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .timeline-num-fill, .timeline-title-fill {
+      transition: clip-path 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .timeline-desc {
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .timeline-step.is-active .timeline-node-marker {
+      background-color: #ffffff !important;
+      border-color: #ffffff !important;
+      transform: scale(1) !important;
+    }
+    .timeline-step.is-active .timeline-node-glow {
+      opacity: 1 !important;
+    }
+    .timeline-step.is-active .timeline-rule-line {
+      transform: scaleX(1) !important;
+    }
+    .timeline-step.is-active .timeline-num-fill {
+      clip-path: inset(0 0% 0 0) !important;
+    }
+    .timeline-step.is-active .timeline-title-fill {
+      clip-path: inset(0 0% 0 0) !important;
+    }
+    .timeline-step.is-active .timeline-desc {
+      opacity: 0.85 !important;
+      transform: translateY(0) !important;
+    }
+
+    /* Custom Project Scale Dropdown Listbox */
+    #scale-dropdown-list {
+      display: none;
+    }
+    #scale-dropdown-list.is-open {
+      display: block;
+      animation: scaleDropdownFadeIn 0.25s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    }
+    @keyframes scaleDropdownFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Form Feedback Modal/Message */
+    #contact-status-toast {
+      display: none;
+      transition: all 0.4s ease;
+    }
+    #contact-status-toast.is-visible {
+      display: flex;
+    }
+
+    /* Mobile TOC sticky offset */
+    @media (max-width: 1023px) {
+      .mobile-toc-bar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+    }
+  </style>
+</head>
+<body class="bg-black text-white selection:bg-white selection:text-black overflow-x-clip">
+
+<!-- ═══════════════════════════════════════════════════════
+     WebGL FLUID BACKGROUND
+     ═══════════════════════════════════════════════════════ -->
+<div id="fluid-bg" aria-hidden="true">
+  <canvas id="fluid-canvas"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAVIGATION BAR
+     ═══════════════════════════════════════════════════════ -->
+<div class="nav-shell" id="nav-shell">
+  <div class="nav-bar-container">
+    <!-- Brand Mark Lockup -->
+    <div class="flex shrink-0 items-center pl-3">
+      <a aria-label="einsum, home" class="BrandMark-module__XJnmdq__lockup group relative flex items-center gap-3.5 py-2 -my-2" href="index.html">
+        <span class="BrandMark-module__XJnmdq__lockupMark">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" class="nav-logo-svg block shrink-0" aria-hidden="true" focusable="false">
+            <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+            <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+            <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+            <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+          </svg>
+        </span>
+        <span class="BrandMark-module__XJnmdq__flip BrandMark-module__XJnmdq__word" aria-hidden="true">
+          <span class="BrandMark-module__XJnmdq__flipper">
+            <span class="BrandMark-module__XJnmdq__face text-[15px] font-medium tracking-[0.3em] text-white">einsum</span>
+            <span class="BrandMark-module__XJnmdq__face BrandMark-module__XJnmdq__back text-[15px] font-medium tracking-[0.22em] uppercase text-white/90">Data &amp; AI</span>
+          </span>
+        </span>
+      </a>
+    </div>
+
+    <!-- Center Nav Links -->
+    <div class="hidden md:flex flex-1 items-center justify-center lg:flex-none lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+      <nav class="flex items-center px-2 transition-all duration-500 gap-4 lg:gap-6">
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html#neural-core">
+            Services
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-50"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html#capabilities">Outcomes</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html">About</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html">Careers</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex shrink-0 items-center gap-2 pr-1.5">
+      <div class="nav-sound-wrapper hidden md:flex items-center pr-6">
+        <button type="button" class="SoundControl-module__IQt0fq__control font-mono" data-variant="bar" aria-pressed="false" aria-label="Sound" title="Sound">
+          <span class="SoundControl-module__IQt0fq__label" aria-hidden="true">Sound</span>
+          <span class="SoundControl-module__IQt0fq__field" aria-hidden="true">
+            <svg class="SoundControl-module__IQt0fq__wave" width="80" height="32" viewBox="0 0 80 32" preserveAspectRatio="none" fill="none">
+              <path class="SoundControl-module__IQt0fq__anchors" d="M1 13V19M79 13V19"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="-2" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="-1" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__primary" data-strand="0" d="M3 16H77" stroke-width="1.15"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="1" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="2" d="M3 16H77" stroke-width="0.7"></path>
+            </svg>
+          </span>
+          <span class="SoundControl-module__IQt0fq__state" aria-hidden="true">
+            <span class="SoundControl-module__IQt0fq__stateReel"><span>On</span><span>Off</span></span>
+          </span>
+        </button>
+      </div>
+      <div class="inline-block p-6 -m-6 hidden md:block">
+        <a class="nav-cta-btn group relative flex items-center gap-2 px-6 py-2.5 bg-white text-black font-medium text-[13px] tracking-tight overflow-hidden transition-all duration-300 active:scale-95 pl-5 pr-5" href="#brief">
+          <span class="relative z-10 whitespace-nowrap transition-all duration-300 w-auto opacity-100">Start Project</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right relative z-10" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+          <div class="absolute inset-0 bg-white group-hover:bg-gray-200 transition-colors"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════════════ -->
+<main id="content" tabindex="-1" class="relative z-10 w-full min-h-screen outline-none">
+  <div class="w-full">
+    <div class="min-h-screen bg-transparent text-white selection:bg-white selection:text-black">
+      
+      <!-- HERO HEADER -->
+      <header data-service-hero="true" id="service-hero" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 pt-32 md:pt-40 pb-20 md:pb-32 lg:pb-40">
+        <div class="flex items-center gap-4 mb-8 md:mb-12">
+          <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 whitespace-nowrap">
+            Contact<span class="hidden sm:inline"> · Operational Protocol</span>
+          </span>
+          <span class="relative h-px flex-1 max-w-[280px] bg-white/10" aria-hidden="true">
+            <span data-rule="true" class="absolute inset-0 origin-left bg-white/40"></span>
+          </span>
+        </div>
+
+        <h1 class="text-[clamp(2.75rem,9.5vw,8.5rem)] font-sans font-thin tracking-tighter leading-[0.85] uppercase">
+          <span data-ink="true" class="relative block">
+            <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.32)]" aria-hidden="true">Initiate</span>
+            <span class="absolute inset-0 block text-white ink-mask-text">Initiate</span>
+          </span>
+          <span data-ink="true" class="relative block font-bold">
+            <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.32)]" aria-hidden="true">Connection.</span>
+            <span class="absolute inset-0 block text-white ink-mask-text">Connection.</span>
+          </span>
+        </h1>
+
+        <p data-rise="true" class="mt-8 md:mt-10 text-[clamp(1.05rem,2vw,1.4rem)] text-white/55 max-w-3xl font-light leading-relaxed font-sans">
+          Discuss your data platform or AI project. Share the systems you work with, the outcome you need and the constraints that matter. We will help define a practical next step.
+        </p>
+      </header>
+
+      <!-- MOBILE SUB-NAV (STICKY ON THIS PAGE) -->
+      <nav aria-label="On this page" class="mobile-toc-bar lg:hidden border-b border-white/10 bg-black/80 backdrop-blur-md">
+        <ol class="flex gap-6 overflow-x-auto px-4 md:px-8 py-3.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <li class="shrink-0" id="toc-mobile-brief">
+            <a href="#brief" class="flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white">
+              <span class="toc-line h-px transition-all duration-500 w-4 bg-white" aria-hidden="true"></span>
+              <span style="font-variant-numeric:tabular-nums">01</span>
+              <span>The brief</span>
+            </a>
+          </li>
+          <li class="shrink-0" id="toc-mobile-process">
+            <a href="#process" class="flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/35">
+              <span class="toc-line h-px transition-all duration-500 w-2 bg-white/30" aria-hidden="true"></span>
+              <span style="font-variant-numeric:tabular-nums">02</span>
+              <span>The process</span>
+            </a>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- SECTIONS GRID WITH STICKY ASIDE -->
+      <div class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 pt-16 lg:pt-0 pb-24 md:pb-32 lg:grid lg:grid-cols-[1fr_200px] lg:gap-16">
+        
+        <div class="flex flex-col gap-24 md:gap-32">
+          
+          <!-- SECTION 01: THE BRIEF -->
+          <section id="brief" aria-labelledby="brief-title" class="scroll-mt-32 lg:scroll-mt-28">
+            <div class="mb-10 md:mb-14 flex flex-col gap-4 md:gap-5">
+              <div class="flex items-center gap-4">
+                <span class="text-[10px] font-mono text-white/50 uppercase tracking-[0.3em]">01 / Start a project</span>
+                <span class="relative h-px flex-1 max-w-[240px] bg-white/10 overflow-hidden" aria-hidden="true">
+                  <span class="absolute inset-0 origin-left bg-white/40" style="transform:scaleX(1)"></span>
+                </span>
+              </div>
+              <h2 class="text-[clamp(2.1rem,4.6vw,4.25rem)] font-sans font-light tracking-tight text-white leading-[0.95]">
+                <span id="brief-title">The brief</span>
+              </h2>
+            </div>
+
+            <div class="relative w-full border border-white/10 bg-[#050505] overflow-hidden">
+              <div class="grid grid-cols-1 lg:grid-cols-12">
+                <!-- Left Sidebar Details -->
+                <div class="lg:col-span-5 flex flex-col justify-between gap-12 border-b lg:border-b-0 lg:border-r border-white/10 p-6 md:p-8 lg:p-10">
+                  <span class="flex items-center gap-3 text-[10px] font-mono uppercase tracking-[0.2em] text-white/50">
+                    <span class="w-1.5 h-1.5 bg-white/40" aria-hidden="true"></span>
+                    Start a project
+                  </span>
+
+                  <div>
+                    <h3 class="text-[clamp(2.2rem,4.4vw,4.4rem)] font-sans font-thin uppercase tracking-tighter leading-[0.88] text-white">
+                      Tell us<br>where you<br>want to go<br><span class="font-bold">Next.</span>
+                    </h3>
+                    <p class="mt-8 max-w-md text-[15px] font-light leading-relaxed text-white/50">
+                      Share the challenge, your metrics for success, and the timeline you're aiming for. We'll respond within one business day with the next steps.
+                    </p>
+                    <div class="mt-6 text-sm font-light leading-relaxed text-white/60">
+                      <p>Prefer email?</p>
+                      <a href="mailto:info@einsum.com" class="inline-flex min-h-11 items-center break-all text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white hover:decoration-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-white">
+                        info@einsum.com
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Form -->
+                <form id="contact-brief-form" class="lg:col-span-7 flex flex-col gap-8 p-6 md:p-8 lg:p-10" onsubmit="return false;">
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex flex-col gap-2">
+                      <label for="brief-name" class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/50">Full name</label>
+                      <input id="brief-name" name="name" type="text" placeholder="Ada Lovelace" autocomplete="name" required class="w-full bg-transparent border-b border-white/15 py-3 text-[15px] font-sans font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-white">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <label for="brief-email" class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/50">Work email</label>
+                      <input id="brief-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required class="w-full bg-transparent border-b border-white/15 py-3 text-[15px] font-sans font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-white">
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label for="brief-company" class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/50">Company</label>
+                    <input id="brief-company" name="company" type="text" placeholder="Company name" autocomplete="organization" required class="w-full bg-transparent border-b border-white/15 py-3 text-[15px] font-sans font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-white">
+                  </div>
+
+                  <!-- Project Scale Custom Select -->
+                  <div class="relative z-30 flex flex-col gap-2" id="scale-select-wrapper">
+                    <input type="hidden" name="projectScale" id="hidden-project-scale" value="">
+                    <span id="brief-scale-label" class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/50">Project scale</span>
+                    
+                    <button type="button" id="btn-scale-select" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="brief-scale-label" class="w-full bg-transparent border-b border-white/15 py-3 text-[15px] font-sans font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-white flex items-center justify-between text-left">
+                      <span id="scale-select-current" class="text-white/25">Select an option</span>
+                      <svg id="scale-chevron" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-4 w-4 text-white/40 transition-transform duration-300" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+
+                    <!-- Dropdown Options List -->
+                    <ul role="listbox" id="scale-dropdown-list" aria-labelledby="brief-scale-label" class="absolute left-0 right-0 top-full z-40 mt-2 border border-white/15 bg-[#050505]">
+                      <li role="option" aria-selected="false">
+                        <button type="button" data-value="exploratory" data-label="Exploratory discovery" class="scale-option-btn flex w-full items-center justify-between px-4 py-3.5 text-left font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 hover:bg-white/[0.06] text-white/60 hover:text-white">
+                          <span>Exploratory discovery</span>
+                          <span class="scale-dot hidden h-1.5 w-1.5 bg-white" aria-hidden="true"></span>
+                        </button>
+                      </li>
+                      <li role="option" aria-selected="false">
+                        <button type="button" data-value="pilot" data-label="Pilot / POC" class="scale-option-btn flex w-full items-center justify-between px-4 py-3.5 text-left font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 hover:bg-white/[0.06] text-white/60 hover:text-white">
+                          <span>Pilot / POC</span>
+                          <span class="scale-dot hidden h-1.5 w-1.5 bg-white" aria-hidden="true"></span>
+                        </button>
+                      </li>
+                      <li role="option" aria-selected="false">
+                        <button type="button" data-value="platform" data-label="Platform implementation" class="scale-option-btn flex w-full items-center justify-between px-4 py-3.5 text-left font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 hover:bg-white/[0.06] text-white/60 hover:text-white">
+                          <span>Platform implementation</span>
+                          <span class="scale-dot hidden h-1.5 w-1.5 bg-white" aria-hidden="true"></span>
+                        </button>
+                      </li>
+                      <li role="option" aria-selected="false">
+                        <button type="button" data-value="transformation" data-label="Enterprise transformation" class="scale-option-btn flex w-full items-center justify-between px-4 py-3.5 text-left font-mono text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 hover:bg-white/[0.06] text-white/60 hover:text-white">
+                          <span>Enterprise transformation</span>
+                          <span class="scale-dot hidden h-1.5 w-1.5 bg-white" aria-hidden="true"></span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label for="brief-goals" class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/50">What outcomes matter most?</label>
+                    <textarea id="brief-goals" name="goals" rows="4" placeholder="Tell us about your KPIs, constraints, and the teams involved." class="w-full bg-transparent border-b border-white/15 py-3 text-[15px] font-sans font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-white resize-none"></textarea>
+                  </div>
+
+                  <!-- Submit button with smooth hover wipe -->
+                  <button type="submit" id="btn-submit-brief" class="group relative mt-2 flex h-14 w-full items-center justify-between overflow-hidden border border-white/20 px-6 transition-colors duration-500 hover:border-white disabled:cursor-not-allowed disabled:opacity-50">
+                    <span class="absolute inset-0 origin-left scale-x-0 bg-white transition-transform duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-x-100" aria-hidden="true"></span>
+                    <span id="btn-submit-text" class="relative z-10 font-mono text-[10px] tracking-[0.24em] uppercase text-white transition-colors duration-500 group-hover:text-black">Send project brief</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right relative z-10 h-4 w-4 text-white transition-colors duration-500 group-hover:text-black" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                  </button>
+
+                  <!-- Live status response feedback -->
+                  <div id="contact-status-toast" class="p-4 border border-white/20 bg-white/[0.04] text-white flex items-center gap-3">
+                    <svg class="h-4 w-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <p class="font-sans text-[13px] font-light text-white/90">Thank you. We received your message and will respond within one business day.</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION 02: HOW A PROJECT STARTS (ENGAGEMENT TIMELINE) -->
+          <section id="process" aria-labelledby="process-title" class="scroll-mt-32 lg:scroll-mt-28">
+            <div class="mb-10 md:mb-14 flex flex-col gap-4 md:gap-5">
+              <div class="flex items-center gap-4">
+                <span class="text-[10px] font-mono text-white/50 uppercase tracking-[0.3em]">02 / Engagement</span>
+                <span class="relative h-px flex-1 max-w-[240px] bg-white/10 overflow-hidden" aria-hidden="true">
+                  <span class="absolute inset-0 origin-left bg-white/40" style="transform:scaleX(1)"></span>
+                </span>
+              </div>
+              <h2 class="text-[clamp(2.1rem,4.6vw,4.25rem)] font-sans font-light tracking-tight text-white leading-[0.95]">
+                <span id="process-title">How a project starts</span>
+              </h2>
+            </div>
+
+            <!-- Central Vertical Spine Timeline -->
+            <div id="timeline-container" class="relative py-2 md:py-6">
+              <!-- Background Rail Line -->
+              <div class="absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 bg-white/10" aria-hidden="true"></div>
+              
+              <!-- Dynamic Progress Fill Line -->
+              <div id="timeline-progress-bar" class="absolute top-0 left-1/2 h-full w-px origin-top -translate-x-1/2 bg-white/70" style="transform:scaleY(0)" aria-hidden="true"></div>
+              
+              <!-- Traveling Spark Beam -->
+              <div id="timeline-spark" class="absolute left-1/2 h-10 w-px -translate-x-1/2 bg-white shadow-[0_0_18px_3px_rgba(255,255,255,0.35)]" style="top:calc(0% - 2.5rem)" aria-hidden="true"></div>
+
+              <!-- 7 Alternating Milestones -->
+              <ol class="relative flex flex-col gap-12 md:gap-24">
+                
+                <!-- 01: Initial Call (Left) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-1 pr-5 md:pr-16 text-right">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 right-0 origin-right" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">01</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">01</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">01 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Initial Call</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Initial Call</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55 ml-auto" style="opacity:0.25;transform:translateY(6px)">
+                      Quick alignment call to understand client needs.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 02: Discovery Phase (Right) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-3 pl-5 md:pl-16">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 left-0 origin-left" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">02</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">02</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">02 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Discovery Phase</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Discovery Phase</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55" style="opacity:0.25;transform:translateY(6px)">
+                      Deep dive into goals, challenges, and requirements.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 03: Proof of Concept (Left) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-1 pr-5 md:pr-16 text-right">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 right-0 origin-right" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">03</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">03</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">03 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Proof of Concept</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Proof of Concept</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55 ml-auto" style="opacity:0.25;transform:translateY(6px)">
+                      Build a small-scale demo or concept validation.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 04: Design (Right) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-3 pl-5 md:pl-16">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 left-0 origin-left" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">04</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">04</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">04 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Design</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Design</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55" style="opacity:0.25;transform:translateY(6px)">
+                      Craft UI/UX design and technical architecture.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 05: Implementation (Left) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-1 pr-5 md:pr-16 text-right">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 right-0 origin-right" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">05</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">05</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">05 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Implementation</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Implementation</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55 ml-auto" style="opacity:0.25;transform:translateY(6px)">
+                      Develop and integrate the full solution.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 06: Testing & Launch (Right) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-3 pl-5 md:pl-16">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 left-0 origin-left" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">06</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">06</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">06 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Testing &amp; Launch</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Testing &amp; Launch</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55" style="opacity:0.25;transform:translateY(6px)">
+                      QA, feedback loops, and live release.
+                    </p>
+                  </div>
+                </li>
+
+                <!-- 07: Support & Maintenance (Left) -->
+                <li class="timeline-step relative grid grid-cols-[1fr_2.5rem_1fr] md:grid-cols-[1fr_3rem_1fr] items-center">
+                  <div class="relative col-start-2 row-start-1 flex items-center justify-center self-center">
+                    <span class="timeline-node-marker relative z-10 block h-2.5 w-2.5 rotate-45 border" style="background-color:rgba(0,0,0,1);border-color:rgba(255,255,255,0.3);transform:scale(0.75)" aria-hidden="true"></span>
+                    <span class="timeline-node-glow absolute h-9 w-9 rotate-45 bg-white/15 blur-md" style="opacity:0" aria-hidden="true"></span>
+                  </div>
+                  <div class="relative row-start-1 col-start-1 pr-5 md:pr-16 text-right">
+                    <span class="timeline-rule-line absolute top-1/2 h-px w-3 bg-white/40 md:w-10 right-0 origin-right" style="transform:scaleX(0)" aria-hidden="true"></span>
+                    <span class="relative block text-[clamp(2.75rem,7vw,6.5rem)] font-sans font-thin leading-none tracking-tighter select-none" style="font-variant-numeric:tabular-nums" aria-hidden="true">
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">07</span>
+                      <span class="timeline-num-fill absolute inset-0 block text-white/[0.25]" style="clip-path:inset(0 100% 0 0)">07</span>
+                    </span>
+                    <h3 class="relative mt-2 text-[clamp(1.3rem,2.8vw,2.4rem)] font-sans font-light leading-tight tracking-tight text-white">
+                      <span class="sr-only">07 </span>
+                      <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Support &amp; Maintenance</span>
+                      <span class="timeline-title-fill absolute inset-0 block text-white" style="clip-path:inset(0 100% 0 0)">Support &amp; Maintenance</span>
+                    </h3>
+                    <p class="timeline-desc mt-3 max-w-sm text-[13px] md:text-[15px] font-light leading-relaxed text-white/55 ml-auto" style="opacity:0.25;transform:translateY(6px)">
+                      Ongoing improvements and reliability.
+                    </p>
+                  </div>
+                </li>
+
+              </ol>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- DESKTOP STICKY ASIDE TOC -->
+        <aside class="hidden lg:block">
+          <div class="sticky top-32">
+            <span class="block text-[10px] font-mono tracking-[0.3em] uppercase text-white/30 mb-5">On this page</span>
+            <nav aria-label="On this page">
+              <ol class="flex flex-col gap-3">
+                <li id="toc-desktop-brief">
+                  <a href="#brief" class="group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white">
+                    <span class="toc-line h-px transition-all duration-500 w-5 bg-white" aria-hidden="true"></span>
+                    <span style="font-variant-numeric:tabular-nums">01</span>
+                    <span>The brief</span>
+                  </a>
+                </li>
+                <li id="toc-desktop-process">
+                  <a href="#process" class="group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/55 hover:text-white/80">
+                    <span class="toc-line h-px transition-all duration-500 w-3 bg-white/30" aria-hidden="true"></span>
+                    <span style="font-variant-numeric:tabular-nums">02</span>
+                    <span>The process</span>
+                  </a>
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     EINSUM FOOTER
+     ═══════════════════════════════════════════════════════ -->
+<footer class="w-full text-white relative z-10 selection:bg-white selection:text-black border-t border-white/10">
+  <!-- Footer Invitation -->
+  <section class="FooterInvitation-module__ps4GTq__invitation" data-footer-invitation="true" aria-labelledby="footer-invitation-title">
+    <div class="FooterInvitation-module__ps4GTq__composition">
+      <h2 id="footer-invitation-title" class="FooterInvitation-module__ps4GTq__title">
+        <span>See the systems.</span>
+        <span>And what changed.</span>
+      </h2>
+      <div class="FooterInvitation-module__ps4GTq__action">
+        <p class="FooterInvitation-module__ps4GTq__description">Explore the architecture, engineering decisions and outcomes behind our work.</p>
+        <a class="FooterInvitation-module__ps4GTq__button" href="index.html#capabilities">
+          <span class="FooterInvitation-module__ps4GTq__buttonBase">Explore outcomes</span>
+          <span class="FooterInvitation-module__ps4GTq__buttonOverlay" aria-hidden="true">
+            <span class="FooterInvitation-module__ps4GTq__buttonLabel">Explore outcomes</span>
+            <span class="FooterInvitation-module__ps4GTq__arrowWindow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right FooterInvitation-module__ps4GTq__arrowOut" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right FooterInvitation-module__ps4GTq__arrowIn" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Links Columns -->
+  <div class="relative z-10 bg-black/55">
+    <div class="w-full max-w-[1600px] mx-auto px-4 md:px-8 relative">
+      <span class="absolute left-4 md:left-8 right-4 md:right-8 top-0 h-px bg-white/10" aria-hidden="true"></span>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+        
+        <!-- 01 / Services -->
+        <div class="flex flex-col gap-5 py-8 lg:py-10 lg:col-span-3 border-b md:border-b-0 md:border-r border-white/10 md:pr-8">
+          <span class="text-[10px] font-mono tracking-[0.24em] text-white/35 uppercase">01 / Services</span>
+          <ul class="flex flex-col gap-3.5">
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#neural-core">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Data Engineering</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Data Engineering</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#neural-core">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">AI Engineering</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">AI Engineering</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#neural-core">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Analytics</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Analytics</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#neural-core">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Migration</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Migration</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#neural-core">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Managed Services</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Managed Services</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 02 / Company -->
+        <div class="flex flex-col gap-5 py-8 lg:py-10 lg:col-span-2 border-b lg:border-b-0 lg:border-r border-white/10 md:pl-8 lg:pr-8">
+          <span class="text-[10px] font-mono tracking-[0.24em] text-white/35 uppercase">02 / Company</span>
+          <ul class="flex flex-col gap-3.5">
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html#capabilities">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Outcomes</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Outcomes</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">About</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">About</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="index.html">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">Careers</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">Careers</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+            <li>
+              <a class="group relative inline-flex overflow-hidden font-sans uppercase tracking-[0.15em] text-xs font-medium items-center gap-2" href="https://linkedin.com/company/einsum" target="_blank" rel="noopener">
+                <div class="relative leading-none">
+                  <span class="block text-white/55 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-full">LinkedIn</span>
+                  <span class="absolute left-0 top-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 text-white">LinkedIn</span>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/30 group-hover:text-white transition-colors duration-300" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 03 / einsum Brand -->
+        <div class="flex flex-col gap-5 py-8 lg:py-10 lg:col-span-4 border-b md:border-b-0 md:border-r border-white/10 lg:px-8">
+          <span class="text-[10px] font-mono tracking-[0.24em] text-white/35 uppercase">03 / einsum</span>
+          <div class="flex items-center gap-3.5 self-start">
+            <svg viewBox="0 0 40 40" width="38" height="38" fill="none" class="block shrink-0" aria-hidden="true" role="img" focusable="false">
+              <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+              <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+              <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+              <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+            </svg>
+            <span class="text-[15px] font-medium tracking-[0.3em] text-white">einsum</span>
+          </div>
+          <h3 class="text-xl md:text-2xl font-light tracking-tight text-white/85 leading-snug">Intelligence <span class="font-medium text-white/60">Architects.</span></h3>
+          <p class="text-white/40 text-sm leading-relaxed max-w-sm font-sans">Architecting enterprise-grade data platforms and autonomous frameworks. We transform raw complexity into pure operational intelligence.</p>
+        </div>
+
+        <!-- 04 / Record -->
+        <div class="flex flex-col gap-5 py-8 lg:py-10 lg:col-span-3 md:pl-8 lg:pl-8">
+          <span class="text-[10px] font-mono tracking-[0.24em] text-white/35 uppercase">04 / Record</span>
+          <ul class="flex flex-col gap-3.5 text-[10px] font-mono uppercase tracking-[0.2em] text-white/45">
+            <li>© 2026 einsum</li>
+            <li><a class="hover:text-white transition-colors" href="index.html">Privacy Policy</a></li>
+            <li><a class="hover:text-white transition-colors" href="index.html">Terms of Use</a></li>
+            <li>
+              <button id="btn-scroll-top" class="group inline-flex items-center gap-2 hover:text-white transition-colors cursor-pointer uppercase tracking-[0.2em]">
+                <span>Top</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right w-3 h-3 text-white/40 group-hover:text-white transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS & INTERACTIONS
+     ═══════════════════════════════════════════════════════ -->
+<script>
+// ── WebGL Liquid Background ──────────────────────────────
+(function() {
+  const canvas = document.getElementById('fluid-canvas');
+  if (!canvas) return;
+
+  const gl = canvas.getContext('webgl', {
+    antialias: false,
+    alpha: false,
+    depth: false,
+    stencil: false,
+    powerPreference: 'high-performance'
+  });
+  if (!gl) return;
+
+  const vertexSrc = `
+    attribute vec2 position;
+    void main() {
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
+
+  const fragmentSrc = `
+    precision highp float;
+
+    uniform float uTime;
+    uniform vec2 uResolution;
+    uniform vec2 uMouse;
+    uniform float uScroll;
+    uniform float uVelocity;
+    uniform float uPointerVel;
+
+    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+               -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy));
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+      + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+        dot(x12.zw,x12.zw)), 0.0);
+      m = m*m;
+      m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
+    float fbm(vec2 x) {
+      float v = 0.0;
+      float a = 0.5;
+      vec2 shift = vec2(100.0);
+      mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+      for (int i = 0; i < 3; ++i) {
+        v += a * snoise(x);
+        x = rot * x * 2.0 + shift;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / uResolution.xy;
+      vec2 p = uv * 2.0 - 1.0;
+      p.x *= uResolution.x / uResolution.y;
+
+      vec2 mouseP = uMouse;
+      float dist = length(p - mouseP);
+      float mousePull = exp(-dist * 1.5) * (0.5 + uPointerVel * 0.55);
+
+      float t = uTime * 0.15;
+
+      vec2 q = vec2(0.);
+      q.x = fbm( p + 0.00*t );
+      q.y = fbm( p + vec2(1.0) );
+
+      vec2 r = vec2(0.);
+      r.x = fbm( p + 1.0*q + vec2(1.7,9.2) + 0.15*t + (mouseP.x * mousePull) );
+      r.y = fbm( p + 1.0*q + vec2(8.3,2.8) + 0.126*t + (mouseP.y * mousePull) );
+
+      float f = fbm(p + r + (uScroll * 0.2));
+
+      vec3 colorBase = vec3(0.02, 0.02, 0.03);
+      vec3 colorMid = vec3(0.08, 0.12, 0.15);
+      vec3 colorHigh = vec3(0.4, 0.5, 0.6);
+
+      vec3 color = mix(colorBase, colorMid, clamp((f*f)*4.0, 0.0, 1.0));
+      color = mix(color, colorHigh, clamp(length(q)*length(r)*f, 0.0, 1.0) * (0.6 + mousePull * 0.4));
+
+      float v = smoothstep(2.5, 0.1, length(p));
+      float edge = smoothstep(0.4, 0.5, f) - smoothstep(0.5, 0.6, f);
+      color += vec3(0.2, 0.3, 0.4) * edge * (0.5 + uVelocity * 0.1);
+      color *= (0.4 + 0.6 * v);
+
+      float bottomFade = smoothstep(0.0, 0.2, uv.y);
+      color *= bottomFade;
+
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+  function createShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      gl.deleteShader(s);
+      return null;
+    }
+    return s;
+  }
+
+  const vs = createShader(gl.VERTEX_SHADER, vertexSrc);
+  const fs = createShader(gl.FRAGMENT_SHADER, fragmentSrc);
+  if (!vs || !fs) return;
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+  gl.useProgram(program);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(program, 'position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime       = gl.getUniformLocation(program, 'uTime');
+  const uResolution = gl.getUniformLocation(program, 'uResolution');
+  const uMouse      = gl.getUniformLocation(program, 'uMouse');
+  const uScroll     = gl.getUniformLocation(program, 'uScroll');
+  const uVelocity   = gl.getUniformLocation(program, 'uVelocity');
+  const uPointerVel = gl.getUniformLocation(program, 'uPointerVel');
+
+  let smoothMouse = { x: 0, y: 0 };
+  let rawMouse    = { x: 0, y: 0 };
+  let pointerVel  = 0;
+  let scrollVel   = 0;
+  let lastGx = 0, lastGy = 0;
+  let lastScrollY = window.scrollY;
+  let scrollAccum = 0;
+  let scale = 1;
+  let W = 0, H = 0;
+  const startTime = performance.now();
+
+  window.addEventListener('pointermove', function(e) {
+    const nx = e.clientX / window.innerWidth * 2 - 1;
+    const ny = -(e.clientY / window.innerHeight * 2 - 1);
+    rawMouse.x = nx * window.innerWidth / window.innerHeight;
+    rawMouse.y = ny;
+    pointerVel = Math.min(pointerVel + 6 * Math.hypot(nx - lastGx, ny - lastGy), 1);
+    lastGx = nx;
+    lastGy = ny;
+  }, { passive: true });
+
+  window.addEventListener('scroll', function() {
+    const sy = window.scrollY;
+    scrollVel = Math.min(scrollVel + Math.abs(sy - lastScrollY) / 220, 1);
+    lastScrollY = sy;
+  }, { passive: true });
+
+  function resize() {
+    W = Math.max(1, Math.round(canvas.clientWidth));
+    H = Math.max(1, Math.round(canvas.clientHeight));
+    scale = Math.min(1, Math.sqrt(1600000 / (W * H)));
+    const rW = Math.max(1, Math.round(W * scale));
+    const rH = Math.max(1, Math.round(H * scale));
+    if (canvas.width !== rW || canvas.height !== rH) {
+      canvas.width = rW;
+      canvas.height = rH;
+      gl.viewport(0, 0, rW, rH);
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let lastFrame = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
+
+    smoothMouse.x += (rawMouse.x - smoothMouse.x) * 0.05;
+    smoothMouse.y += (rawMouse.y - smoothMouse.y) * 0.05;
+
+    const decay = Math.exp(-2.2 * dt);
+    scrollVel *= decay;
+    pointerVel *= decay;
+    scrollAccum += 0.001;
+
+    resize();
+
+    gl.uniform1f(uTime, (now - startTime) / 1000);
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+    gl.uniform2f(uMouse, smoothMouse.x, smoothMouse.y);
+    gl.uniform1f(uScroll, scrollAccum);
+    gl.uniform1f(uVelocity, scrollVel);
+    gl.uniform1f(uPointerVel, pointerVel);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// ── Header Scroll Glass Pill State ───────────────────────
+(function() {
+  const navShell = document.getElementById('nav-shell');
+  if (!navShell) return;
+  function handleScroll() {
+    if (window.scrollY > 80) {
+      navShell.classList.add('scrolled');
+    } else {
+      navShell.classList.remove('scrolled');
+    }
+  }
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+})();
+
+// ── Hero "Initiate Connection." Ink Mask Wipe On Load ────
+(function() {
+  const hero = document.getElementById('service-hero');
+  if (!hero) return;
+
+  // Trigger load animations
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      hero.classList.add('is-loaded');
+      
+      // Animate --ink property smoothly using JS rAF for full browser support
+      const inkElements = hero.querySelectorAll('[data-ink]');
+      let startVal = -12;
+      const targetVal = 112;
+      const duration = 1200;
+      const startTime = performance.now();
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        // easeOutCubic
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = startVal + (targetVal - startVal) * ease;
+        
+        inkElements.forEach(el => {
+          el.style.setProperty('--ink', current);
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }, 120);
+  });
+})();
+
+// ── Custom Project Scale Dropdown Interaction ───────────
+(function() {
+  const wrapper = document.getElementById('scale-select-wrapper');
+  const btn = document.getElementById('btn-scale-select');
+  const currentText = document.getElementById('scale-select-current');
+  const chevron = document.getElementById('scale-chevron');
+  const list = document.getElementById('scale-dropdown-list');
+  const hiddenInput = document.getElementById('hidden-project-scale');
+  const optionBtns = document.querySelectorAll('.scale-option-btn');
+
+  if (!btn || !list) return;
+
+  function toggleDropdown() {
+    const isOpen = list.classList.contains('is-open');
+    if (isOpen) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  }
+
+  function openDropdown() {
+    list.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.classList.add('border-white');
+    if (chevron) chevron.classList.add('rotate-180');
+  }
+
+  function closeDropdown() {
+    list.classList.remove('is-open');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.classList.remove('border-white');
+    if (chevron) chevron.classList.remove('rotate-180');
+  }
+
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  optionBtns.forEach(b => {
+    b.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const val = this.getAttribute('data-value');
+      const label = this.getAttribute('data-label');
+      
+      hiddenInput.value = val;
+      currentText.textContent = label;
+      currentText.className = 'text-white';
+
+      // Update dots
+      optionBtns.forEach(other => {
+        const dot = other.querySelector('.scale-dot');
+        if (other === this) {
+          other.classList.remove('text-white/60');
+          other.classList.add('text-white');
+          if (dot) dot.classList.remove('hidden');
+        } else {
+          other.classList.remove('text-white');
+          other.classList.add('text-white/60');
+          if (dot) dot.classList.add('hidden');
+        }
+      });
+
+      closeDropdown();
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!wrapper.contains(e.target)) {
+      closeDropdown();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeDropdown();
+    }
+  });
+})();
+
+// ── Contact Form Submission Handler ─────────────────────
+(function() {
+  const form = document.getElementById('contact-brief-form');
+  const submitBtn = document.getElementById('btn-submit-brief');
+  const btnText = document.getElementById('btn-submit-text');
+  const toast = document.getElementById('contact-status-toast');
+  if (!form || !submitBtn) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    btnText.textContent = 'Sending…';
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+      btnText.textContent = 'Brief Transmitted';
+      submitBtn.disabled = false;
+      if (toast) {
+        toast.classList.add('is-visible');
+      }
+      form.reset();
+      const scaleText = document.getElementById('scale-select-current');
+      if (scaleText) {
+        scaleText.textContent = 'Select an option';
+        scaleText.className = 'text-white/25';
+      }
+    }, 850);
+  });
+})();
+
+// ── Section 02 Timeline Scroll Interaction ───────────────
+(function() {
+  const container = document.getElementById('timeline-container');
+  const progressBar = document.getElementById('timeline-progress-bar');
+  const spark = document.getElementById('timeline-spark');
+  const steps = document.querySelectorAll('.timeline-step');
+  if (!container || !steps.length) return;
+
+  // Track progress on scroll
+  function updateTimeline() {
+    const rect = container.getBoundingClientRect();
+    const windowH = window.innerHeight;
+    
+    // Calculate progress between container top hitting center and container bottom hitting center
+    const startY = windowH * 0.6;
+    const endY = windowH * 0.4;
+    const totalDist = rect.height;
+    const currentProgress = (startY - rect.top) / totalDist;
+    const clampedProgress = Math.min(1, Math.max(0, currentProgress));
+
+    if (progressBar) {
+      progressBar.style.transform = `scaleY(${clampedProgress})`;
+    }
+    if (spark) {
+      spark.style.top = `calc(${clampedProgress * 100}% - 2.5rem)`;
+    }
+
+    // Activate individual steps as they reach bottom 45% of viewport
+    steps.forEach(step => {
+      const sRect = step.getBoundingClientRect();
+      if (sRect.top < windowH * 0.72) {
+        step.classList.add('is-active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateTimeline, { passive: true });
+  window.addEventListener('resize', updateTimeline);
+  updateTimeline();
+})();
+
+// ── Table of Contents (On this page) Scroll Spy ──────────
+(function() {
+  const briefSec = document.getElementById('brief');
+  const processSec = document.getElementById('process');
+  
+  const mBrief = document.getElementById('toc-mobile-brief');
+  const mProcess = document.getElementById('toc-mobile-process');
+  const dBrief = document.getElementById('toc-desktop-brief');
+  const dProcess = document.getElementById('toc-desktop-process');
+
+  function setTocActive(which) {
+    if (which === 'brief') {
+      if (mBrief) {
+        mBrief.querySelector('a').className = 'flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white';
+        mBrief.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-4 bg-white';
+      }
+      if (mProcess) {
+        mProcess.querySelector('a').className = 'flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/35';
+        mProcess.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-2 bg-white/30';
+      }
+      if (dBrief) {
+        dBrief.querySelector('a').className = 'group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white';
+        dBrief.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-5 bg-white';
+      }
+      if (dProcess) {
+        dProcess.querySelector('a').className = 'group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/55 hover:text-white/80';
+        dProcess.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-3 bg-white/30';
+      }
+    } else {
+      if (mBrief) {
+        mBrief.querySelector('a').className = 'flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/35';
+        mBrief.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-2 bg-white/30';
+      }
+      if (mProcess) {
+        mProcess.querySelector('a').className = 'flex items-center gap-2 whitespace-nowrap font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white';
+        mProcess.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-4 bg-white';
+      }
+      if (dBrief) {
+        dBrief.querySelector('a').className = 'group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white/55 hover:text-white/80';
+        dBrief.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-3 bg-white/30';
+      }
+      if (dProcess) {
+        dProcess.querySelector('a').className = 'group flex items-center gap-3 font-mono text-[10px] tracking-[0.22em] uppercase transition-colors duration-500 text-white';
+        dProcess.querySelector('.toc-line').className = 'toc-line h-px transition-all duration-500 w-5 bg-white';
+      }
+    }
+  }
+
+  function spyScroll() {
+    if (!processSec) return;
+    const procRect = processSec.getBoundingClientRect();
+    if (procRect.top <= 200) {
+      setTocActive('process');
+    } else {
+      setTocActive('brief');
+    }
+  }
+
+  window.addEventListener('scroll', spyScroll, { passive: true });
+  spyScroll();
+})();
+
+// ── Top Scroll Button ────────────────────────────────────
+(function() {
+  const topBtn = document.getElementById('btn-scroll-top');
+  if (topBtn) {
+    topBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
