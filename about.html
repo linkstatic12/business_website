@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="theme-color" content="#000000">
+  <title>About Us — Energy into Intelligence | einsum</title>
+  <meta name="description" content="We live in an Era where we can transform energy into intelligence. Explore einsum's elite engineering team, modern frontend and backend architectures, and our comprehensive 10-layer AI/ML stack.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="css/modules.css">
+
+  <style>
+    /* ── Base Fonts & Variables ───────────────────────────── */
+    :root {
+      --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-inter);
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .font-mono { font-family: var(--font-mono); }
+    .font-sans { font-family: var(--font-inter); }
+
+    /* ── WebGL Fluid Background ──────────────────────────── */
+    #fluid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+    #fluid-bg canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+    #fluid-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.025;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ── Navigation Shell ─────────────────────────────────── */
+    .nav-shell {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .nav-bar-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      pointer-events: auto;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 1240px;
+      height: 96px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 0;
+      transition: all 0.7s cubic-bezier(0.19,1,0.22,1);
+      will-change: max-width, height, background-color;
+    }
+    .nav-shell.scrolled .nav-bar-container {
+      max-width: 860px;
+      height: 56px;
+      margin-top: 12px;
+      background: rgba(20,20,20,0.72);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border-color: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 0 1.25rem;
+    }
+    .nav-shell.scrolled .nav-logo-svg {
+      height: 22px !important;
+    }
+    .nav-sound-wrapper {
+      transition: all 0.5s cubic-bezier(0.19,1,0.22,1);
+    }
+    .nav-shell.scrolled .nav-sound-wrapper {
+      display: none !important;
+    }
+    .nav-cta-btn {
+      transition: all 0.5s cubic-bezier(0.19,1,0.22,1);
+    }
+    .nav-shell.scrolled .nav-cta-btn {
+      border-radius: 9999px !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+    }
+
+    /* ── Hero Ink Reveal Transition ──────────────────────── */
+    [data-hero] [data-ink] {
+      --ink: -12;
+      transition: --ink 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    [data-hero].is-loaded [data-ink] {
+      --ink: 112;
+    }
+    [data-hero] [data-rule] {
+      transform: scaleX(0);
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    [data-hero].is-loaded [data-rule] {
+      transform: scaleX(1);
+    }
+    [data-hero] [data-rise] {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 1.1s cubic-bezier(0.19, 1, 0.22, 1) 0.3s, transform 1.1s cubic-bezier(0.19, 1, 0.22, 1) 0.3s;
+    }
+    [data-hero].is-loaded [data-rise] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ink-mask-text {
+      -webkit-mask-image: linear-gradient(100deg, #000 calc(var(--ink) * 1%), transparent calc((var(--ink) + 12) * 1%));
+      mask-image: linear-gradient(100deg, #000 calc(var(--ink) * 1%), transparent calc((var(--ink) + 12) * 1%));
+    }
+
+    /* ── Subtle Technical Grid Lines ─────────────────────── */
+    .tech-border {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tech-border-b {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tech-card {
+      background: rgba(12, 12, 14, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .tech-card:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Category Pill */
+    .filter-btn {
+      transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .filter-btn.is-active {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+
+    /* ── Sticky Table of Contents ────────────────────────── */
+    .sticky-about-toc {
+      position: sticky;
+      top: 5rem;
+      z-index: 30;
+    }
+    .about-toc-link.is-active {
+      color: #ffffff;
+    }
+    .about-toc-link.is-active .toc-bar {
+      width: 1.5rem;
+      background: #ffffff;
+    }
+
+    /* Energy Pulse Animation */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .energy-glow {
+      animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    /* Micro terminal styling */
+    .terminal-box {
+      font-family: var(--font-mono);
+      background: rgba(8, 8, 10, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="bg-black text-white selection:bg-white selection:text-black overflow-x-clip">
+
+<!-- ═══════════════════════════════════════════════════════
+     WebGL FLUID BACKGROUND
+     ═══════════════════════════════════════════════════════ -->
+<div id="fluid-bg" aria-hidden="true">
+  <canvas id="fluid-canvas"></canvas>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     NAVIGATION BAR
+     ═══════════════════════════════════════════════════════ -->
+<div class="nav-shell" id="nav-shell">
+  <div class="nav-bar-container">
+    <!-- Brand Mark Lockup -->
+    <div class="flex shrink-0 items-center pl-3">
+      <a aria-label="einsum, home" class="BrandMark-module__XJnmdq__lockup group relative flex items-center gap-3.5 py-2 -my-2" href="index.html">
+        <span class="BrandMark-module__XJnmdq__lockupMark">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none" class="nav-logo-svg block shrink-0" aria-hidden="true" focusable="false">
+            <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+            <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+            <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+            <circle cx="27" cy="12" r="3.5" stroke="#ff6b35" stroke-opacity="0.3" stroke-width="1"/>
+          </svg>
+        </span>
+        <span class="BrandMark-module__XJnmdq__flip BrandMark-module__XJnmdq__word" aria-hidden="true">
+          <span class="BrandMark-module__XJnmdq__flipper">
+            <span class="BrandMark-module__XJnmdq__face text-[15px] font-medium tracking-[0.3em] text-white">einsum</span>
+            <span class="BrandMark-module__XJnmdq__face BrandMark-module__XJnmdq__back text-[15px] font-medium tracking-[0.22em] uppercase text-white/90">Data &amp; AI</span>
+          </span>
+        </span>
+      </a>
+    </div>
+
+    <!-- Center Nav Links -->
+    <div class="hidden md:flex flex-1 items-center justify-center lg:flex-none lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+      <nav class="flex items-center px-2 transition-all duration-500 gap-4 lg:gap-6">
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html#neural-core">
+            Services
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down opacity-50"><path d="m6 9 6 6 6-6"></path></svg>
+          </a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html#capabilities">Outcomes</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-medium tracking-tight transition-colors duration-300 flex items-center gap-1 text-white" href="about.html">About</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left scale-x-100"></span>
+        </div>
+        <div class="relative group">
+          <a class="relative z-10 text-sm font-normal tracking-tight transition-colors duration-300 flex items-center gap-1 text-white/55 hover:text-white" href="index.html">Careers</a>
+          <span class="absolute -bottom-2 left-0 right-0 h-px bg-white origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"></span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex shrink-0 items-center gap-2 pr-1.5">
+      <div class="nav-sound-wrapper hidden md:flex items-center pr-6">
+        <button type="button" class="SoundControl-module__IQt0fq__control font-mono" id="btn-sound-toggle" data-variant="bar" aria-pressed="false" aria-label="Sound" title="Sound">
+          <span class="SoundControl-module__IQt0fq__label" aria-hidden="true">Sound</span>
+          <span class="SoundControl-module__IQt0fq__field" aria-hidden="true">
+            <svg class="SoundControl-module__IQt0fq__wave" width="80" height="32" viewBox="0 0 80 32" preserveAspectRatio="none" fill="none">
+              <path class="SoundControl-module__IQt0fq__anchors" d="M1 13V19M79 13V19"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="-2" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="-1" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__primary" data-strand="0" d="M3 16H77" stroke-width="1.15"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="1" d="M3 16H77" stroke-width="0.7"></path>
+              <path class="SoundControl-module__IQt0fq__strand" data-strand="2" d="M3 16H77" stroke-width="0.7"></path>
+            </svg>
+          </span>
+          <span class="SoundControl-module__IQt0fq__state" aria-hidden="true">
+            <span class="SoundControl-module__IQt0fq__stateReel" id="sound-state-reel"><span>On</span><span>Off</span></span>
+          </span>
+        </button>
+      </div>
+      <div class="inline-block p-6 -m-6 hidden md:block">
+        <a class="nav-cta-btn group relative flex items-center gap-2 px-6 py-2.5 bg-white text-black font-medium text-[13px] tracking-tight overflow-hidden transition-all duration-300 active:scale-95 pl-5 pr-5" href="contact.html">
+          <span class="relative z-10 whitespace-nowrap transition-all duration-300 w-auto opacity-100">Start Project</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right relative z-10" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+          <div class="absolute inset-0 bg-white group-hover:bg-gray-200 transition-colors"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════════════ -->
+<main id="content" tabindex="-1" class="relative z-10 w-full min-h-screen outline-none">
+  
+  <!-- HERO / THESIS SECTION -->
+  <header data-hero="true" id="hero-thesis" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 pt-32 md:pt-44 pb-16 md:pb-28">
+    <div class="flex items-center gap-4 mb-8 md:mb-12">
+      <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 whitespace-nowrap">
+        01 / Foundational Thesis · Computational Thermodynamics
+      </span>
+      <span class="relative h-px flex-1 max-w-[280px] bg-white/10" aria-hidden="true">
+        <span data-rule="true" class="absolute inset-0 origin-left bg-white/40"></span>
+      </span>
+      <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-white/30 hidden sm:inline">
+        E = mc² → E = FLOPs · Latent Reasoning
+      </span>
+    </div>
+
+    <!-- Core Thesis Typography -->
+    <h1 class="text-[clamp(2.5rem,6.8vw,6.5rem)] font-sans font-extralight tracking-tighter leading-[0.92] uppercase max-w-7xl">
+      <span data-ink="true" class="relative block">
+        <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">We live in an Era</span>
+        <span class="absolute inset-0 block text-white ink-mask-text">We live in an Era</span>
+      </span>
+      <span data-ink="true" class="relative block font-normal">
+        <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">where we can transform</span>
+        <span class="absolute inset-0 block text-white ink-mask-text">where we can transform</span>
+      </span>
+      <span data-ink="true" class="relative block font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70">
+        <span class="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]" aria-hidden="true">Energy into Intelligence.</span>
+        <span class="absolute inset-0 block text-white ink-mask-text">Energy into Intelligence.</span>
+      </span>
+    </h1>
+
+    <div data-rise="true" class="mt-10 md:mt-14 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 border-t border-white/10 pt-8 md:pt-12">
+      <div class="lg:col-span-7">
+        <p class="text-[clamp(1.1rem,1.8vw,1.45rem)] text-white/80 font-light leading-relaxed font-sans">
+          Throughout human civilization, every paradigm shift was defined by thermodynamic mastery: fire forged metallurgy, steam unlocked mechanization, and electricity powered computation. Today, we cross the threshold into the fifth epoch—where gigawatts of raw electrical potential are focused into silicon matrices to produce deterministic, high-dimensional reasoning.
+        </p>
+        <p class="mt-6 text-white/50 text-base font-light leading-relaxed">
+          At <strong class="text-white font-medium">einsum</strong>, we operate at the precise intersection of physical compute and cognitive abstraction. We architect the infrastructure, compilation backends, vector spaces, and distributed clusters that transform raw kilowatt-hours into autonomous decision engines and enterprise competitive advantage.
+        </p>
+      </div>
+
+      <div class="lg:col-span-5 flex flex-col justify-between">
+        <div class="p-6 md:p-8 rounded-lg bg-white/[0.02] border border-white/10 backdrop-blur-md">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">Thermodynamic Telemetry</span>
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYSTEM ACTIVE
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-white tracking-tight">10<sup class="text-xs text-white/60">24+</sup></div>
+              <div class="font-mono text-[11px] text-white/40 uppercase tracking-wider mt-1">FLOPs Engineered</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-white tracking-tight">&lt; 1.2ms</div>
+              <div class="font-mono text-[11px] text-white/40 uppercase tracking-wider mt-1">KV Prefill Latency</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-white tracking-tight">99.98%</div>
+              <div class="font-mono text-[11px] text-white/40 uppercase tracking-wider mt-1">Cluster Utilization</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl md:text-3xl font-semibold text-white tracking-tight">10-Tier</div>
+              <div class="font-mono text-[11px] text-white/40 uppercase tracking-wider mt-1">Frontier AI Matrix</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center gap-4 text-xs font-mono text-white/40">
+          <span class="w-2 h-2 rounded-full bg-[#ff6b35]"></span>
+          <span>Einstein Summation Notation (einsum): Tensors mapped across arbitrarily high dimensions.</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- STICKY ON-PAGE TOC SUBNAV -->
+  <nav aria-label="On this page" class="sticky top-0 z-40 border-y border-white/10 bg-black/85 backdrop-blur-md">
+    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-3.5 flex items-center justify-between">
+      <ol class="flex items-center gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden text-xs">
+        <li class="shrink-0">
+          <a href="#hero-thesis" class="about-toc-link flex items-center gap-2 whitespace-nowrap font-mono text-[11px] tracking-[0.18em] uppercase text-white hover:text-white transition-colors duration-300">
+            <span class="toc-bar h-px w-3 bg-white/40 transition-all duration-300"></span>
+            <span>01 Thesis</span>
+          </a>
+        </li>
+        <li class="shrink-0">
+          <a href="#professionals" class="about-toc-link flex items-center gap-2 whitespace-nowrap font-mono text-[11px] tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors duration-300">
+            <span class="toc-bar h-px w-2 bg-white/20 transition-all duration-300"></span>
+            <span>02 Expertise</span>
+          </a>
+        </li>
+        <li class="shrink-0">
+          <a href="#frontend-stack" class="about-toc-link flex items-center gap-2 whitespace-nowrap font-mono text-[11px] tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors duration-300">
+            <span class="toc-bar h-px w-2 bg-white/20 transition-all duration-300"></span>
+            <span>03 Frontend</span>
+          </a>
+        </li>
+        <li class="shrink-0">
+          <a href="#backend-stack" class="about-toc-link flex items-center gap-2 whitespace-nowrap font-mono text-[11px] tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors duration-300">
+            <span class="toc-bar h-px w-2 bg-white/20 transition-all duration-300"></span>
+            <span>04 Backend</span>
+          </a>
+        </li>
+        <li class="shrink-0">
+          <a href="#ai-ml-stack" class="about-toc-link flex items-center gap-2 whitespace-nowrap font-mono text-[11px] tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors duration-300">
+            <span class="toc-bar h-px w-2 bg-white/20 transition-all duration-300"></span>
+            <span>05 AI/ML Stack</span>
+          </a>
+        </li>
+      </ol>
+      <div class="hidden lg:flex items-center gap-2 font-mono text-[10px] text-white/30 uppercase tracking-widest">
+        <span>ARCHITECTURAL SPECIFICATION</span>
+        <span class="text-white/10">|</span>
+        <span class="text-[#ff6b35]">V.2026.4</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 02: THE EXPERTISE OF OUR PROFESSIONALS
+       ═══════════════════════════════════════════════════════ -->
+  <section id="professionals" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 py-20 md:py-32 border-b border-white/10">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">
+        02 / Human Capital · Systems Architects & Applied Researchers
+      </span>
+      <span class="h-px flex-1 max-w-[240px] bg-white/10"></span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <div class="lg:col-span-5">
+        <h2 class="text-3xl md:text-5xl font-light tracking-tight uppercase leading-tight">
+          Where Rigorous Theory Meets <span class="font-semibold text-white">Silicon Realities.</span>
+        </h2>
+        <p class="mt-6 text-white/60 leading-relaxed font-light text-base">
+          Our team is composed of seasoned practitioners who have built and operated multi-terabyte data platforms, scaled distributed training clusters, and authored low-level CUDA/Triton kernels.
+        </p>
+        <p class="mt-4 text-white/60 leading-relaxed font-light text-base">
+          We reject superficial wrappers and transient hype. Instead, our professionals operate with an uncompromising standard of deterministic engineering: dissecting memory bottlenecks, optimizing cache locality, establishing provable data governance, and hardening autonomous agents for high-stakes production environments.
+        </p>
+
+        <!-- Professional Competency Metrics -->
+        <div class="mt-10 flex flex-col gap-4">
+          <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/10">
+            <span class="font-mono text-xs text-white/70">Hardware-Software Co-Design</span>
+            <span class="font-mono text-xs text-white/40">H100 / B200 / NVLink Topologies</span>
+          </div>
+          <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/10">
+            <span class="font-mono text-xs text-white/70">Distributed Systems & Sharding</span>
+            <span class="font-mono text-xs text-white/40">3D Parallelism · Zero Latency Loss</span>
+          </div>
+          <div class="flex items-center justify-between p-3.5 bg-white/[0.02] border border-white/10">
+            <span class="font-mono text-xs text-white/70">Mathematical Formulation</span>
+            <span class="font-mono text-xs text-white/40">Reinforcement Learning · Loss Landscapes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Professional Disciplines (3-Card Layout) -->
+      <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.2em] text-[#ff6b35] uppercase mb-3">01 / Infrastructure & Kernel</div>
+            <h3 class="text-xl font-medium text-white mb-3">Distributed Compute Architects</h3>
+            <p class="text-sm text-white/55 leading-relaxed font-light">
+              Specialists in multi-node cluster orchestration, GPU interconnect fabrics (InfiniBand/RoCE), and hardware-aware attention kernels. They eliminate communication overheads across tens of thousands of accelerator cores.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">PyTorch FSDP2</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Triton</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">NCCL</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Slurm</span>
+          </div>
+        </div>
+
+        <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.2em] text-[#ff6b35] uppercase mb-3">02 / Algorithmic Alignment</div>
+            <h3 class="text-xl font-medium text-white mb-3">Post-Training & RL Scientists</h3>
+            <p class="text-sm text-white/55 leading-relaxed font-light">
+              Frontier researchers guiding reinforcement learning with verifiable reward systems (RLVR), preference modeling (DPO/GRPO), and parameter-efficient domain adaptation.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">OpenRLHF</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">GRPO</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Ray</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">HF TRL</span>
+          </div>
+        </div>
+
+        <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.2em] text-[#ff6b35] uppercase mb-3">03 / Cognitive Orchestration</div>
+            <h3 class="text-xl font-medium text-white mb-3">Autonomous Agent Engineers</h3>
+            <p class="text-sm text-white/55 leading-relaxed font-light">
+              Engineers designing stateful multi-actor graphs, cyclical control loops, persistent episodic memory virtualizers, and standardized client-server protocol integrations.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">LangGraph</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">MCP Protocol</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Mem0</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">DSPy</span>
+          </div>
+        </div>
+
+        <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.2em] text-[#ff6b35] uppercase mb-3">04 / Enterprise Systems</div>
+            <h3 class="text-xl font-medium text-white mb-3">Full-Stack Platform Architects</h3>
+            <p class="text-sm text-white/55 leading-relaxed font-light">
+              Full-lifecycle system designers ensuring ultra-low latency inference streaming, high-throughput microservices, sub-second vector lookups, and military-grade access control.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">FastAPI</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">React</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Spring Boot</span>
+            <span class="px-2 py-1 bg-white/5 border border-white/10 font-mono text-[10px] text-white/70">Qdrant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 03: FRONTEND FRAMEWORKS ARCHITECTURE
+       ═══════════════════════════════════════════════════════ -->
+  <section id="frontend-stack" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 py-20 md:py-32 border-b border-white/10">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">
+        03 / Presentation Tier · Streaming Client Surfaces
+      </span>
+      <span class="h-px flex-1 max-w-[240px] bg-white/10"></span>
+    </div>
+
+    <div class="max-w-3xl mb-14">
+      <h2 class="text-3xl md:text-5xl font-light tracking-tight uppercase leading-tight">
+        Frontend Engineering: <span class="font-semibold text-white">The Human-Cognitive Interface.</span>
+      </h2>
+      <p class="mt-4 text-white/60 font-light text-base leading-relaxed">
+        Building user interfaces for intelligent systems requires fundamentally different mechanics than conventional web apps. Our frontend engineers master asynchronous token-streaming, WebGPU hardware acceleration, reactive state DAGs, optimistic UI reconciliation, and generative micro-widgets.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- React -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 01</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Core Standard</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">React</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            The bedrock of modern component ecosystems. We leverage React 19's Server Components (RSC), concurrent rendering pipelines, and custom hooks to manage complex agentic trace waterfalls, diff inspections, and multi-pane workspace layouts.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">React 19</span>
+          <span class="px-2 py-0.5 bg-white/5">Server Components</span>
+          <span class="px-2 py-0.5 bg-white/5">Zustand</span>
+          <span class="px-2 py-0.5 bg-white/5">TanStack</span>
+        </div>
+      </div>
+
+      <!-- Node.js (Frontend / SSR / Full-Stack) -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 02</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Runtime & BFF</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Node.js</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Unified JavaScript execution engine powering Backend-for-Frontend (BFF) layers, edge rendering, and real-time streaming proxies. Bridges asynchronous LLM token generation directly into browser WebSocket/SSE channels without serialization bottlenecks.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">BFF Architecture</span>
+          <span class="px-2 py-0.5 bg-white/5">SSE Streaming</span>
+          <span class="px-2 py-0.5 bg-white/5">Edge Workers</span>
+          <span class="px-2 py-0.5 bg-white/5">V8 Isolation</span>
+        </div>
+      </div>
+
+      <!-- Next.js -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 03</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Production Framework</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Next.js</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Enterprise application framework delivering hybrid static-dynamic hydration, streaming SSR with Suspense boundaries, and zero-bundle server logic. Powers mission-critical enterprise portals requiring sub-100ms First Contentful Paint.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">App Router</span>
+          <span class="px-2 py-0.5 bg-white/5">Streaming SSR</span>
+          <span class="px-2 py-0.5 bg-white/5">Route Handlers</span>
+          <span class="px-2 py-0.5 bg-white/5">Vercel AI SDK</span>
+        </div>
+      </div>
+
+      <!-- Vue.js -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 04</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Reactive Standard</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Vue.js / Nuxt</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Intuitive, hyper-optimized reactive framework driven by proxy-based reactivity and the Composition API. Deployed extensively in high-density analytics dashboards where fine-grained DOM updates outperform heavy virtual-DOM re-renders.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Composition API</span>
+          <span class="px-2 py-0.5 bg-white/5">Nuxt 3</span>
+          <span class="px-2 py-0.5 bg-white/5">Pinia</span>
+          <span class="px-2 py-0.5 bg-white/5">Fine Reactivity</span>
+        </div>
+      </div>
+
+      <!-- Svelte & SvelteKit -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 05</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Compiled Speed</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Svelte / SvelteKit</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Compiler-centric architecture that eliminates runtime overhead by turning components into surgical vanilla JavaScript. Essential for 60fps real-time data plotting, WebGL overlays, and resource-constrained edge terminal environments.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Svelte 5 Runes</span>
+          <span class="px-2 py-0.5 bg-white/5">Zero Runtime</span>
+          <span class="px-2 py-0.5 bg-white/5">SvelteKit</span>
+          <span class="px-2 py-0.5 bg-white/5">Micro-Bundle</span>
+        </div>
+      </div>
+
+      <!-- Angular -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Tier 06</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Enterprise Rigid</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Angular</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Strict, opinionated enterprise platform featuring standalone components, Signals-based change detection, and native dependency injection. Ideal for highly regulated financial and healthcare systems demanding monolithic rigor and strict type safety.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Signals</span>
+          <span class="px-2 py-0.5 bg-white/5">RxJS</span>
+          <span class="px-2 py-0.5 bg-white/5">Strict TypeScript</span>
+          <span class="px-2 py-0.5 bg-white/5">DI Engine</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 04: BACKEND FRAMEWORKS & DATA PLANES
+       ═══════════════════════════════════════════════════════ -->
+  <section id="backend-stack" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 py-20 md:py-32 border-b border-white/10">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">
+        04 / Core Engine · High-Concurrency Services & Orchestration
+      </span>
+      <span class="h-px flex-1 max-w-[240px] bg-white/10"></span>
+    </div>
+
+    <div class="max-w-3xl mb-14">
+      <h2 class="text-3xl md:text-5xl font-light tracking-tight uppercase leading-tight">
+        Backend Architectures: <span class="font-semibold text-white">Throughput, Durability, and Scale.</span>
+      </h2>
+      <p class="mt-4 text-white/60 font-light text-base leading-relaxed">
+        The backends supporting generative systems must balance heavy parallel GPU dispatch, low-latency relational ACID transactions, real-time message brokering, and resilient connection pooling. We engineer multi-language backend clusters tailored to the exact performance envelope of each workload.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- FastAPI -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Async Python</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-400/10 border border-emerald-400/20 text-emerald-400">AI Standard</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">FastAPI</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            High-performance asynchronous Python API framework built on Starlette and Pydantic v2. Provides native async concurrency, automatic OpenAPI generation, and sub-millisecond serialization for serving model inferences and agent tool dispatch.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Pydantic v2</span>
+          <span class="px-2 py-0.5 bg-white/5">Async / Await</span>
+          <span class="px-2 py-0.5 bg-white/5">OpenAPI 3.1</span>
+          <span class="px-2 py-0.5 bg-white/5">Uvicorn / Gunicorn</span>
+        </div>
+      </div>
+
+      <!-- Flask -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Micro-Services</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Lightweight</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Flask</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Minimalist, modular Python micro-framework. Perfect for specialized mathematical worker microservices, embedded inference proxies, and lightweight event consumers where framework overhead must remain minimal.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Werkzeug</span>
+          <span class="px-2 py-0.5 bg-white/5">WSGI</span>
+          <span class="px-2 py-0.5 bg-white/5">Celery Workers</span>
+          <span class="px-2 py-0.5 bg-white/5">Microservice Mesh</span>
+        </div>
+      </div>
+
+      <!-- Django -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Batteries-Included</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Enterprise ORM</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Django</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Robust Python enterprise backbone providing declarative relational schema management, built-in admin instrumentation, CSRF protection, and Django Ninja async extensions. Anchors complex multi-tenant enterprise data governance systems.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">PostgreSQL ORM</span>
+          <span class="px-2 py-0.5 bg-white/5">Django Ninja</span>
+          <span class="px-2 py-0.5 bg-white/5">Multi-Tenancy</span>
+          <span class="px-2 py-0.5 bg-white/5">Audit Trails</span>
+        </div>
+      </div>
+
+      <!-- Node.js (Express / NestJS) -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Event-Driven</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">High I/O</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Node.js (NestJS / Express)</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Non-blocking event loop execution engine. Using NestJS for modular enterprise domain architectures with TypeScript decorators, dependency injection, and native microservice transport layers (RabbitMQ, Kafka, gRPC).
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">NestJS</span>
+          <span class="px-2 py-0.5 bg-white/5">Fastify Engine</span>
+          <span class="px-2 py-0.5 bg-white/5">Kafka Streams</span>
+          <span class="px-2 py-0.5 bg-white/5">gRPC Protocol</span>
+        </div>
+      </div>
+
+      <!-- Spring Boot -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Enterprise Java</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Mission-Critical</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Spring Boot</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Battle-tested enterprise Java framework engineered for high-concurrency transactional consistency, Spring Cloud microservices, and reactive Spring WebFlux pipelines. Deployed in tier-1 banking, healthcare, and enterprise data backbones.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Spring WebFlux</span>
+          <span class="px-2 py-0.5 bg-white/5">Spring Security</span>
+          <span class="px-2 py-0.5 bg-white/5">Virtual Threads</span>
+          <span class="px-2 py-0.5 bg-white/5">Hibernate JPA</span>
+        </div>
+      </div>
+
+      <!-- Go & Rust (Low-Latency Systems) -->
+      <div class="tech-card p-6 md:p-8 rounded-lg flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs text-[#ff6b35] tracking-widest uppercase">Native Systems</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Sub-Millisecond</span>
+          </div>
+          <h3 class="text-2xl font-light text-white tracking-tight mb-2">Go &amp; Rust (Gin, Axum)</h3>
+          <p class="text-sm text-white/55 font-light leading-relaxed">
+            Compiled binary performance with zero garbage-collection pauses. We author custom vector routing proxies, token-bucket rate limiters, and high-volume protocol adapters in Go (Gin/Fiber) and Rust (Axum/Tokio) capable of handling millions of concurrent connections.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-1.5 font-mono text-[10px] text-white/60">
+          <span class="px-2 py-0.5 bg-white/5">Tokio Async</span>
+          <span class="px-2 py-0.5 bg-white/5">Axum (Rust)</span>
+          <span class="px-2 py-0.5 bg-white/5">Go Goroutines</span>
+          <span class="px-2 py-0.5 bg-white/5">Zero-Copy IO</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 05: THE 10-LAYER FRONTIER AI/ML STACK
+       ═══════════════════════════════════════════════════════ -->
+  <section id="ai-ml-stack" class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 py-20 md:py-32">
+    
+    <div class="flex items-center gap-4 mb-6">
+      <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50">
+        05 / Cognitive Physics · Frontier AI &amp; Machine Learning Stack
+      </span>
+      <span class="h-px flex-1 max-w-[280px] bg-white/10"></span>
+      <span class="font-mono text-[10px] text-white/30 hidden md:inline">10 FULLY REALIZED DOMAINS</span>
+    </div>
+
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+      <div class="max-w-3xl">
+        <h2 class="text-3xl md:text-5xl font-light tracking-tight uppercase leading-tight">
+          The 10-Layer AI/ML <span class="font-semibold text-white">Operational Matrix.</span>
+        </h2>
+        <p class="mt-4 text-white/60 font-light text-base leading-relaxed">
+          From hardware-level GPU IO-tiling to cognitive agentic memory hierarchies, our team commands every layer of the modern AI engineering stack. Filter by discipline or search for specific libraries below.
+        </p>
+      </div>
+
+      <!-- Live Search & Interactive Filter Controls -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div class="relative">
+          <input type="text" id="ai-search-input" placeholder="Search framework, kernel, protocol..." class="w-full sm:w-72 bg-white/[0.04] border border-white/15 px-4 py-2.5 pl-9 text-xs font-mono text-white placeholder:text-white/30 outline-none transition-colors focus:border-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 text-white/40"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </div>
+        <button id="btn-reset-filters" class="px-4 py-2.5 font-mono text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-colors">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Pill Filter Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-b border-white/10">
+      <button class="filter-btn is-active shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/15" data-filter="all">All 10 Layers</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="training">1. Base Training</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="sft">2. SFT & PEFT</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="alignment">3. Alignment & RL</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="serving">4. Serving</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="rag">5. RAG & Vectors</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="memory">6. Memory</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="protocols">7. Protocols</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="orchestration">8. Orchestration</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="eval">9. Evaluation</button>
+      <button class="filter-btn shrink-0 px-3.5 py-1.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-white/10 text-white/50 hover:text-white" data-filter="ui">10. Agentic UI</button>
+    </div>
+
+    <!-- AI/ML CARDS CONTAINER -->
+    <div id="ai-cards-grid" class="flex flex-col gap-8">
+
+      <!-- 01: Base Training & Distributed Compute -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="training" data-search="megatron-lm pytorch fsdp2 deepspeed flashattention v1 v2 v3 v4 3d parallelism zero stage ampere hopper blackwell hbm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">01</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Base Training &amp; Distributed Compute</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Large-scale pretraining, hardware execution, and distributed model sharding</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Hardware Silicon Layer</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Core 3D Parallelism</div>
+            <h4 class="text-lg font-medium text-white mb-2">Megatron-LM / PyTorch FSDP2</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Backbone engines for Tensor Parallelism (TP), Pipeline Parallelism (PP), and Fully Sharded Data Parallelism (FSDP2) across multi-node GPU clusters. Eliminates inter-node bottlenecking and synchronizes gradients across tens of thousands of GPUs.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Memory Optimization</div>
+            <h4 class="text-lg font-medium text-white mb-2">DeepSpeed</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Pioneering ZeRO-stage (ZeRO-1, ZeRO-2, ZeRO-3) distributed memory optimization and CPU/NVMe parameter offloading engines. Enables training massive parameter models on constrained hardware budgets.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Hardware-Aware Kernels</div>
+            <h4 class="text-lg font-medium text-white mb-2">FlashAttention (v1–v4)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              IO-aware exact attention kernels that dramatically reduce high-bandwidth memory (HBM) read/writes. Tailored specifically for NVIDIA Ampere, Hopper (H100/H200), and Blackwell (B200) architectures to unlock near-theoretical peak FLOPs.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02: Supervised Fine-Tuning (SFT) & PEFT -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="sft" data-search="hugging face trl sfttrainer peft lora qlora dora vera unsloth liger kernel torchtune triton instruction tuning">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">02</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Supervised Fine-Tuning (SFT) &amp; PEFT</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Instruction tuning, parameter-efficient adaptation, and kernel optimization</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Domain Adaptation</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Supervised Pipeline</div>
+            <h4 class="text-lg font-medium text-white mb-2">Hugging Face TRL (SFTTrainer)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Industry standard library for supervised instruction tuning, loss masking over prompt tokens, and sequence packing to saturate batch compute without padding waste.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Parameter Efficiency</div>
+            <h4 class="text-lg font-medium text-white mb-2">PEFT (Hugging Face)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              De facto framework for low-rank and sparse parameter adaptation: LoRA, QLoRA (4-bit NF4 quantization), DoRA (Weight-Decomposed LoRA), and VeRA.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Fused CUDA Acceleration</div>
+            <h4 class="text-lg font-medium text-white mb-2">Unsloth</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Custom hand-written Triton kernels delivering up to 5x faster fine-tuning with 80% lower VRAM usage, enabling enterprise SFT on single or dual GPU setups.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Drop-In Triton Kernels</div>
+            <h4 class="text-lg font-medium text-white mb-2">Liger Kernel</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Triton-fused drop-in implementations of RMSNorm, SwiGLU activations, and cross-entropy loss, substantially decreasing peak memory pressure during backprop.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg md:col-span-2 lg:col-span-2">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Modular PyTorch Framework</div>
+            <h4 class="text-lg font-medium text-white mb-2">torchtune</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Meta’s modular, clean, native PyTorch fine-tuning framework engineered for hackability, transparent recipe execution, and seamless integration with distributed compute backends.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03: Alignment & Reasoning RL (Post-Training) -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="alignment" data-search="hugging face trl ppotrainer dpotrainer grpotrainer openrlhf miles preference tuning reward modeling rlhf rlvr">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">03</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Alignment &amp; Reasoning RL (Post-Training)</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Preference tuning, reward modeling, and reinforcement learning with verifiable rewards</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Cognitive Post-Training</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Preference & Policy</div>
+            <h4 class="text-lg font-medium text-white mb-2">Hugging Face TRL</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Production implementations for PPOTrainer (Proximal Policy Optimization), DPOTrainer (Direct Preference Optimization), and Group-Relative Policy algorithms (GRPOTrainer) enabling modern reasoning models.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Multi-Node RL Engine</div>
+            <h4 class="text-lg font-medium text-white mb-2">OpenRLHF</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Ray- and DeepSpeed-backed high-throughput framework architected for multi-node RLHF and Reinforcement Learning with Verifiable Rewards (RLVR) across mathematical and code evaluation tasks.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Distributed Post-Training</div>
+            <h4 class="text-lg font-medium text-white mb-2">Miles</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              PyTorch-native distributed RL engine purpose-built for scalable post-training reasoning pipelines, reward credit assignment, and stable policy updates.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04: Inference Serving & Constrained Decoding -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="serving" data-search="vllm tensorrt-llm sglang nvidia dynamo xgrammar outlines pagedattention speculative decoding constrained decoding cfgs json schema">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">04</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Inference Serving &amp; Constrained Decoding</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">KV cache virtualization, continuous batching, speculative decoding, and schema enforcement</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Low Latency Serving</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">PagedAttention Pioneer</div>
+            <h4 class="text-lg font-medium text-white mb-2">vLLM</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              The benchmark engine for maximum serving throughput via PagedAttention memory management, continuous dynamic request batching, and prefix caching for multi-turn conversations.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Multi-GPU Speculative</div>
+            <h4 class="text-lg font-medium text-white mb-2">TensorRT-LLM &amp; SGLang</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Extreme execution speed with native multi-GPU tensor parallel serving, RadixAttention tree-based KV sharing, and speculative decoding draft verification.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Disaggregated Serving</div>
+            <h4 class="text-lg font-medium text-white mb-2">NVIDIA Dynamo</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Cluster-level orchestrator decoupling prefill compute nodes from decode compute nodes, maximizing hardware arithmetic intensity and minimizing time-to-first-token.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Logit-Level Grammar</div>
+            <h4 class="text-lg font-medium text-white mb-2">XGrammar &amp; Outlines</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Finite State Machine (FSM) and Context-Free Grammar (CFG) guided token samplers enforcing 100% strict JSON schemas and regex masks directly at the model logits.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05: Retrieval-Augmented Generation (RAG) & Vector Stores -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="rag" data-search="llamaindex langchain qdrant milvus chroma pgvector splade spladev2 colbert late-interaction vector retrieval hybrid search">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">05</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Retrieval-Augmented Generation (RAG) &amp; Vector Stores</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Knowledge indexing, hybrid sparse/dense search, and late-interaction routing</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Knowledge Infrastructure</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Orchestration & Retrieval</div>
+            <h4 class="text-lg font-medium text-white mb-2">LlamaIndex &amp; LangChain</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Comprehensive frameworks for multi-modal document chunking, semantic parsing, hierarchical index graphs, query rewrites, and HyDE (Hypothetical Document Embeddings).
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Vector Databases</div>
+            <h4 class="text-lg font-medium text-white mb-2">Qdrant, Milvus, Chroma, pgvector</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Enterprise vector indexing backends. We architect Rust-native Qdrant clusters, distributed Milvus for billion-scale embeddings, and pgvector for unified relational-vector queries.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Late-Interaction Models</div>
+            <h4 class="text-lg font-medium text-white mb-2">SPLADE / SPLADEv2 &amp; ColBERT</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Learned sparse representations (SPLADEv2) for precise keyword recall without manual synonym dictionaries, combined with ColBERT token-level late interaction for unmatched retrieval fidelity.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 06: Agentic Memory Systems -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="memory" data-search="mem0 memgpt letta coala agentic memory episodic semantic procedural working context">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">06</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Agentic Memory Systems</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Persistent state, scratchpads, and experience retrieval across multi-session lifecycles</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Stateful Persistence</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Preference & Episodic Extraction</div>
+            <h4 class="text-lg font-medium text-white mb-2">Mem0</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Production-scale personalized agent memory layer providing continuous asynchronous extraction of user traits, preferences, and multi-session facts into structured knowledge graphs.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Hierarchical Virtualization</div>
+            <h4 class="text-lg font-medium text-white mb-2">MemGPT (Letta)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Operating system-style virtualized memory architecture managing working context windows against persistent archival storage tiers with self-directed recall and memory consolidation.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Cognitive Architecture</div>
+            <h4 class="text-lg font-medium text-white mb-2">COALA Framework</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Rigorous cognitive architecture standard partitioning agent cognition into distinct working, episodic (past interactions), semantic (world facts), and procedural (tool execution) memory modules.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 07: Agent Protocols & Interoperability -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="protocols" data-search="model context protocol mcp anthropic agent-to-agent a2a google json-rpc agent cards pub-sub">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">07</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Agent Protocols &amp; Interoperability</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Standardized interfaces enabling deterministic tool execution and agent-to-agent negotiation</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Protocol Standards</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <div class="p-6 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-[#ff6b35] uppercase">Anthropic Standard</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">JSON-RPC 2.0</span>
+            </div>
+            <h4 class="text-xl font-medium text-white mb-2">Model Context Protocol (MCP)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Client-server JSON-RPC standard establishing uniform boundaries for exposing data repositories, dynamic prompts, and local or remote tools to agentic systems without vendor lock-in. We build high-throughput enterprise MCP servers and gateways.
+            </p>
+          </div>
+          <div class="p-6 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-xs text-[#ff6b35] uppercase">Google Enterprise Spec</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-white/60">Multi-Turn Task Bus</span>
+            </div>
+            <h4 class="text-xl font-medium text-white mb-2">Agent-to-Agent Protocol (A2A)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Enterprise specification defining cryptographic Agent Cards, capability discovery, asynchronous multi-turn task delegation lifecycles, and pub/sub event meshes between federated autonomous entities.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 08: Agent Orchestration Frameworks -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="orchestration" data-search="langgraph autogen crewai dspy openai agents sdk assistants api semantic kernel nvidia oo agents nooa cyclical loops actors">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">08</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Agent Orchestration Frameworks</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">The core runtime coordination layers governing multi-agent state machines</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Runtime Orchestration</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Cyclical Graph State</div>
+            <h4 class="text-lg font-medium text-white mb-2">LangGraph</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Stateful, multi-actor workflow graphs featuring explicit time-travel checkpointing, cyclical feedback loops, and deterministic human-in-the-loop approval barriers.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Actor-Pattern Multi-Agent</div>
+            <h4 class="text-lg font-medium text-white mb-2">Microsoft AutoGen</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Event-driven conversational multi-agent framework built around actor paradigms, enabling autonomous negotiation and collective problem-solving across specialized personas.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Role-Playing Workflows</div>
+            <h4 class="text-lg font-medium text-white mb-2">CrewAI</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Task-oriented collaborative agent framework mapping corporate organization structures, delegation rules, and operational roles to autonomous multi-agent crews.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Algorithmic Prompt Compilation</div>
+            <h4 class="text-lg font-medium text-white mb-2">DSPy</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Declarative framework that treats prompts as compilable programs, automatically tuning few-shot demonstrations and reasoning modules against programmatic metrics.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Managed Harness</div>
+            <h4 class="text-lg font-medium text-white mb-2">OpenAI Agents SDK / Assistants</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Managed execution runtime providing hosted file inspection, code execution sandbox, streaming tool invocation, and managed session threads.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Enterprise Multi-Language</div>
+            <h4 class="text-lg font-medium text-white mb-2">Semantic Kernel (Microsoft)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Enterprise SDK integrating AI orchestration directly into native C#, Python, and Java corporate architectures with strict telemetry and enterprise security.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg md:col-span-2 lg:col-span-3">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Hardware-Accelerated Event Loops</div>
+            <h4 class="text-lg font-medium text-white mb-2">NVIDIA OO Agents (NOOA)</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Object-oriented agent runtime mapping agent capabilities directly to Python class structures, async event loops, and CUDA execution streams for maximum hardware concurrency.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 09: Evaluation & Benchmarks -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="eval" data-search="ragas g-eval deepeval swe-bench webarena osworld gaia evaluation benchmarks llm-as-a-judge trajectory efficiency">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">09</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Evaluation &amp; Benchmarks</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Measuring agent capabilities, trajectory efficiency, alignment, and retrieval precision</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Quality &amp; Safety</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">RAG Evaluation Metric</div>
+            <h4 class="text-lg font-medium text-white mb-2">RAGAS</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Automated evaluation framework calculating mathematical metrics for retrieval faithfulness, answer relevancy, and context precision to systematically eliminate hallucination.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">LLM-as-a-Judge</div>
+            <h4 class="text-lg font-medium text-white mb-2">G-Eval &amp; DeepEval</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Chain-of-thought grading criteria for testing response safety, hallucination rates, and task completion in continuous integration and deployment (CI/CD) pipelines.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Industry Standards</div>
+            <h4 class="text-lg font-medium text-white mb-2">SWE-bench, WebArena, GAIA</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Rigorous benchmarking against SWE-bench (real-world GitHub software engineering), WebArena / OSWorld (full OS and browser automation), and GAIA (multimodal digital assistants).
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10: Agentic UI & Interaction -->
+      <article class="ai-layer-card tech-card p-6 md:p-10 rounded-xl" data-category="ui" data-search="vercel ai sdk langgraph studio chainlit gradio streamlit generative ui widgets reasoning waterfalls">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs text-[#ff6b35] font-bold">10</span>
+            <div>
+              <h3 class="text-2xl md:text-3xl font-light text-white tracking-tight">Agentic UI &amp; Interaction</h3>
+              <p class="font-mono text-xs text-white/40 mt-0.5">Frontend libraries tailored for asynchronous agent outputs, reasoning traces, and approval gates</p>
+            </div>
+          </div>
+          <span class="self-start md:self-auto px-3 py-1 rounded text-[11px] font-mono text-white/60 bg-white/5 border border-white/10">Cognitive UX</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Streaming UI Toolkit</div>
+            <h4 class="text-lg font-medium text-white mb-2">Vercel AI SDK</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              TypeScript/React library architected for fluid token streaming, tool call visualization, generative UI component hydration, and client state orchestration.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Graph Debugger</div>
+            <h4 class="text-lg font-medium text-white mb-2">LangGraph Studio</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Specialized visual GUI for inspecting, stepping through, and live-editing multi-agent graph states, node transitions, and human review gates during execution.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Step-by-Step Reasoner</div>
+            <h4 class="text-lg font-medium text-white mb-2">Chainlit</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Lightweight Python chat framework supporting step-by-step reasoning waterfalls, intermediate tool inspection, and interactive human feedback barriers.
+            </p>
+          </div>
+          <div class="p-5 bg-white/[0.02] border border-white/10 rounded-lg">
+            <div class="font-mono text-xs text-[#ff6b35] mb-2 uppercase">Rapid Prototyping</div>
+            <h4 class="text-lg font-medium text-white mb-2">Gradio &amp; Streamlit</h4>
+            <p class="text-sm text-white/55 font-light leading-relaxed">
+              Agile model evaluation and demo harnesses allowing stakeholders to interact directly with internal models, vector stores, and prototype workflows.
+            </p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Empty state for search -->
+    <div id="ai-search-empty" class="hidden py-16 text-center border border-white/10 rounded-xl bg-white/[0.01]">
+      <div class="font-mono text-xs text-white/30 uppercase tracking-widest mb-2">No Matching Architecture Component Found</div>
+      <p class="text-sm text-white/50">Try searching for keywords like "Triton", "LoRA", "vLLM", "MCP", or "LangGraph".</p>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 06: CALL TO ACTION
+       ═══════════════════════════════════════════════════════ -->
+  <section class="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 py-20 md:py-32 border-t border-white/10">
+    <div class="tech-card p-8 md:p-16 rounded-2xl relative overflow-hidden border border-white/15">
+      <div class="absolute -right-20 -top-20 w-96 h-96 bg-white/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="relative z-10 max-w-4xl">
+        <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-[#ff6b35] mb-4 block">
+          Platform Architecture Engagement
+        </span>
+        <h2 class="text-3xl md:text-6xl font-light tracking-tight uppercase leading-[0.95] text-white">
+          Ready to Convert <span class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70">Raw Compute</span> Into Defensible Intelligence?
+        </h2>
+        <p class="mt-6 text-white/60 font-light text-base md:text-lg leading-relaxed max-w-2xl">
+          Bring us your toughest scaling bottlenecks, unstructured data lakes, or ambitious agentic workflows. We will architect a deterministic, production-grade path forward.
+        </p>
+        
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="contact.html" class="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-medium text-sm tracking-tight overflow-hidden transition-all duration-300 active:scale-95">
+            <span class="relative z-10 font-mono text-xs uppercase tracking-widest font-semibold">Initiate Architecture Review</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            <div class="absolute inset-0 bg-gray-200 transition-colors"></div>
+          </a>
+          <a href="index.html#neural-core" class="inline-flex items-center gap-2 px-6 py-4 border border-white/20 text-white font-mono text-xs uppercase tracking-widest hover:border-white/50 transition-colors">
+            <span>Explore Services Core</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════ -->
+<footer class="relative z-10 w-full border-t border-white/10 bg-black pt-16 md:pt-24 pb-12">
+  <div class="max-w-[1600px] mx-auto px-4 md:px-8">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 pb-16 border-b border-white/10">
+      
+      <!-- 01 / Navigation Links -->
+      <div class="lg:col-span-3 flex flex-col gap-4">
+        <span class="font-mono text-[10px] tracking-[0.24em] text-white/35 uppercase">01 / Services</span>
+        <ul class="flex flex-col gap-3 font-sans text-xs uppercase tracking-[0.15em]">
+          <li><a href="index.html#neural-core" class="text-white/55 hover:text-white transition-colors">Data Engineering</a></li>
+          <li><a href="index.html#neural-core" class="text-white/55 hover:text-white transition-colors">AI Engineering</a></li>
+          <li><a href="index.html#neural-core" class="text-white/55 hover:text-white transition-colors">Analytics Platforms</a></li>
+          <li><a href="index.html#neural-core" class="text-white/55 hover:text-white transition-colors">Migration & Modernization</a></li>
+          <li><a href="index.html#neural-core" class="text-white/55 hover:text-white transition-colors">Managed Services</a></li>
+        </ul>
+      </div>
+
+      <!-- 02 / Company -->
+      <div class="lg:col-span-3 flex flex-col gap-4">
+        <span class="font-mono text-[10px] tracking-[0.24em] text-white/35 uppercase">02 / Company</span>
+        <ul class="flex flex-col gap-3 font-sans text-xs uppercase tracking-[0.15em]">
+          <li><a href="index.html#capabilities" class="text-white/55 hover:text-white transition-colors">Outcomes</a></li>
+          <li><a href="about.html" class="text-white font-medium">About</a></li>
+          <li><a href="index.html" class="text-white/55 hover:text-white transition-colors">Careers</a></li>
+          <li><a href="https://linkedin.com/company/einsum" target="_blank" rel="noopener" class="text-white/55 hover:text-white transition-colors">LinkedIn</a></li>
+        </ul>
+      </div>
+
+      <!-- 03 / Brand Statement -->
+      <div class="lg:col-span-4 flex flex-col gap-4">
+        <span class="font-mono text-[10px] tracking-[0.24em] text-white/35 uppercase">03 / einsum</span>
+        <div class="flex items-center gap-3">
+          <svg viewBox="0 0 40 40" width="34" height="34" fill="none" class="shrink-0" aria-hidden="true">
+            <rect x="1" y="1" width="38" height="38" rx="8" fill="#141312" stroke="#2a2725" stroke-width="1.2"/>
+            <rect x="2" y="2" width="36" height="36" rx="7" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+            <path d="M12 12H28L19 20L28 28H12" stroke="#f8f7f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="27" cy="12" r="2" fill="#ff6b35"/>
+          </svg>
+          <span class="text-sm font-medium tracking-[0.3em] uppercase">einsum</span>
+        </div>
+        <h4 class="text-lg font-light text-white/80">Energy Into Intelligence.</h4>
+        <p class="text-white/40 text-xs leading-relaxed max-w-sm">
+          Architecting enterprise-grade data platforms and autonomous frameworks. We convert thermodynamic compute into pure operational intelligence.
+        </p>
+      </div>
+
+      <!-- 04 / Record -->
+      <div class="lg:col-span-2 flex flex-col gap-4">
+        <span class="font-mono text-[10px] tracking-[0.24em] text-white/35 uppercase">04 / Record</span>
+        <ul class="flex flex-col gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+          <li>© 2026 einsum</li>
+          <li><a href="index.html" class="hover:text-white transition-colors">Privacy Policy</a></li>
+          <li><a href="index.html" class="hover:text-white transition-colors">Terms of Use</a></li>
+          <li>
+            <button id="btn-scroll-top" class="inline-flex items-center gap-1.5 hover:text-white transition-colors uppercase cursor-pointer">
+              <span>Top</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10px] text-white/30 uppercase tracking-widest">
+      <span>GLOBAL OPERATIONAL ARCHITECTURE</span>
+      <span>DATABRICKS · MICROSOFT FABRIC · AZURE · GPU INFRASTRUCTURE</span>
+    </div>
+
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS & INTERACTIONS
+     ═══════════════════════════════════════════════════════ -->
+<script>
+// ── WebGL Liquid Background ──────────────────────────────
+(function() {
+  const canvas = document.getElementById('fluid-canvas');
+  if (!canvas) return;
+
+  const gl = canvas.getContext('webgl', {
+    antialias: false,
+    alpha: false,
+    depth: false,
+    stencil: false,
+    powerPreference: 'high-performance'
+  });
+  if (!gl) return;
+
+  const vertexSrc = `
+    attribute vec2 position;
+    void main() {
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
+
+  const fragmentSrc = `
+    precision highp float;
+
+    uniform float uTime;
+    uniform vec2 uResolution;
+    uniform vec2 uMouse;
+    uniform float uScroll;
+    uniform float uVelocity;
+    uniform float uPointerVel;
+
+    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    float snoise(vec2 v){
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+               -0.577350269189626, 0.024390243902439);
+      vec2 i  = floor(v + dot(v, C.yy));
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod(i, 289.0);
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+      + i.x + vec3(0.0, i1.x, 1.0 ));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+        dot(x12.zw,x12.zw)), 0.0);
+      m = m*m;
+      m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+
+    float fbm(vec2 x) {
+      float v = 0.0;
+      float a = 0.5;
+      vec2 shift = vec2(100.0);
+      mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+      for (int i = 0; i < 3; ++i) {
+        v += a * snoise(x);
+        x = rot * x * 2.0 + shift;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / uResolution.xy;
+      vec2 p = uv * 2.0 - 1.0;
+      p.x *= uResolution.x / uResolution.y;
+
+      vec2 mouseP = uMouse;
+      float dist = length(p - mouseP);
+      float mousePull = exp(-dist * 1.5) * (0.5 + uPointerVel * 0.55);
+
+      float t = uTime * 0.15;
+
+      vec2 q = vec2(0.);
+      q.x = fbm( p + 0.00*t );
+      q.y = fbm( p + vec2(1.0) );
+
+      vec2 r = vec2(0.);
+      r.x = fbm( p + 1.0*q + vec2(1.7,9.2) + 0.15*t + (mouseP.x * mousePull) );
+      r.y = fbm( p + 1.0*q + vec2(8.3,2.8) + 0.126*t + (mouseP.y * mousePull) );
+
+      float f = fbm(p + r + (uScroll * 0.2));
+
+      vec3 colorBase = vec3(0.02, 0.02, 0.03);
+      vec3 colorMid = vec3(0.08, 0.12, 0.15);
+      vec3 colorHigh = vec3(0.4, 0.5, 0.6);
+
+      vec3 color = mix(colorBase, colorMid, clamp((f*f)*4.0, 0.0, 1.0));
+      color = mix(color, colorHigh, clamp(length(q)*length(r)*f, 0.0, 1.0) * (0.6 + mousePull * 0.4));
+
+      float v = smoothstep(2.5, 0.1, length(p));
+      float edge = smoothstep(0.4, 0.5, f) - smoothstep(0.5, 0.6, f);
+      color += vec3(0.2, 0.3, 0.4) * edge * (0.5 + uVelocity * 0.1);
+      color *= (0.4 + 0.6 * v);
+
+      float bottomFade = smoothstep(0.0, 0.2, uv.y);
+      color *= bottomFade;
+
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+  function createShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      gl.deleteShader(s);
+      return null;
+    }
+    return s;
+  }
+
+  const vs = createShader(gl.VERTEX_SHADER, vertexSrc);
+  const fs = createShader(gl.FRAGMENT_SHADER, fragmentSrc);
+  if (!vs || !fs) return;
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+  gl.useProgram(program);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(program, 'position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime       = gl.getUniformLocation(program, 'uTime');
+  const uResolution = gl.getUniformLocation(program, 'uResolution');
+  const uMouse      = gl.getUniformLocation(program, 'uMouse');
+  const uScroll     = gl.getUniformLocation(program, 'uScroll');
+  const uVelocity   = gl.getUniformLocation(program, 'uVelocity');
+  const uPointerVel = gl.getUniformLocation(program, 'uPointerVel');
+
+  let smoothMouse = { x: 0, y: 0 };
+  let rawMouse    = { x: 0, y: 0 };
+  let pointerVel  = 0;
+  let scrollVel   = 0;
+  let lastGx = 0, lastGy = 0;
+  let lastScrollY = window.scrollY;
+  let scrollAccum = 0;
+  let scale = 1;
+  let W = 0, H = 0;
+  const startTime = performance.now();
+
+  window.addEventListener('pointermove', function(e) {
+    const nx = e.clientX / window.innerWidth * 2 - 1;
+    const ny = -(e.clientY / window.innerHeight * 2 - 1);
+    rawMouse.x = nx * window.innerWidth / window.innerHeight;
+    rawMouse.y = ny;
+    pointerVel = Math.min(pointerVel + 6 * Math.hypot(nx - lastGx, ny - lastGy), 1);
+    lastGx = nx;
+    lastGy = ny;
+  }, { passive: true });
+
+  window.addEventListener('scroll', function() {
+    const sy = window.scrollY;
+    scrollVel = Math.min(scrollVel + Math.abs(sy - lastScrollY) / 220, 1);
+    lastScrollY = sy;
+  }, { passive: true });
+
+  function resize() {
+    W = Math.max(1, Math.round(canvas.clientWidth));
+    H = Math.max(1, Math.round(canvas.clientHeight));
+    scale = Math.min(1, Math.sqrt(1600000 / (W * H)));
+    const rW = Math.max(1, Math.round(W * scale));
+    const rH = Math.max(1, Math.round(H * scale));
+    if (canvas.width !== rW || canvas.height !== rH) {
+      canvas.width = rW;
+      canvas.height = rH;
+      gl.viewport(0, 0, rW, rH);
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let lastFrame = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
+
+    smoothMouse.x += (rawMouse.x - smoothMouse.x) * 0.05;
+    smoothMouse.y += (rawMouse.y - smoothMouse.y) * 0.05;
+
+    const decay = Math.exp(-2.2 * dt);
+    scrollVel *= decay;
+    pointerVel *= decay;
+    scrollAccum += 0.001;
+
+    resize();
+
+    gl.uniform1f(uTime, (now - startTime) / 1000);
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+    gl.uniform2f(uMouse, smoothMouse.x, smoothMouse.y);
+    gl.uniform1f(uScroll, scrollAccum);
+    gl.uniform1f(uVelocity, scrollVel);
+    gl.uniform1f(uPointerVel, pointerVel);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// ── Header Scroll Glass Pill State ───────────────────────
+(function() {
+  const navShell = document.getElementById('nav-shell');
+  if (!navShell) return;
+  function handleScroll() {
+    if (window.scrollY > 80) {
+      navShell.classList.add('scrolled');
+    } else {
+      navShell.classList.remove('scrolled');
+    }
+  }
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+})();
+
+// ── Hero "We live in an Era..." Ink Mask Reveal ───────────
+(function() {
+  const hero = document.getElementById('hero-thesis');
+  if (!hero) return;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      hero.classList.add('is-loaded');
+
+      const inkElements = hero.querySelectorAll('[data-ink]');
+      let startVal = -12;
+      const targetVal = 112;
+      const duration = 1300;
+      const startTime = performance.now();
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = startVal + (targetVal - startVal) * ease;
+
+        inkElements.forEach(el => {
+          el.style.setProperty('--ink', current);
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }, 100);
+  });
+})();
+
+// ── Sound Synthesizer Toggle (Web Audio API) ─────────────
+(function() {
+  const soundBtn = document.getElementById('btn-sound-toggle');
+  const soundStateReel = document.getElementById('sound-state-reel');
+  let audioCtx = null;
+  let isMuted = true;
+  let ambientOsc = null;
+  let gainNode = null;
+
+  if (!soundBtn) return;
+
+  function initAudio() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+    }
+  }
+
+  function playFuturisticTone(freq, duration) {
+    if (!audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  soundBtn.addEventListener('click', () => {
+    initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    isMuted = !isMuted;
+    soundBtn.setAttribute('aria-pressed', (!isMuted).toString());
+
+    if (!isMuted) {
+      if (soundStateReel) soundStateReel.style.transform = 'translateY(-50%)';
+      playFuturisticTone(880, 0.4);
+    } else {
+      if (soundStateReel) soundStateReel.style.transform = 'translateY(0%)';
+      playFuturisticTone(440, 0.3);
+    }
+  });
+})();
+
+// ── AI/ML Interactive Filter & Real-Time Search ─────────
+(function() {
+  const searchInput = document.getElementById('ai-search-input');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const resetBtn = document.getElementById('btn-reset-filters');
+  const cards = document.querySelectorAll('.ai-layer-card');
+  const emptyState = document.getElementById('ai-search-empty');
+
+  let activeCategory = 'all';
+  let searchTerm = '';
+
+  function applyFilters() {
+    let visibleCount = 0;
+    const term = searchTerm.trim().toLowerCase();
+
+    cards.forEach(card => {
+      const cat = card.getAttribute('data-category');
+      const searchData = (card.getAttribute('data-search') || '') + ' ' + card.innerText.toLowerCase();
+      
+      const matchesCategory = (activeCategory === 'all' || cat === activeCategory);
+      const matchesSearch = !term || searchData.includes(term);
+
+      if (matchesCategory && matchesSearch) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (emptyState) {
+      if (visibleCount === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      filterBtns.forEach(b => {
+        b.classList.remove('is-active');
+        b.classList.add('text-white/50');
+      });
+      this.classList.add('is-active');
+      this.classList.remove('text-white/50');
+      activeCategory = this.getAttribute('data-filter') || 'all';
+      applyFilters();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      searchTerm = this.value;
+      applyFilters();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      if (searchInput) searchInput.value = '';
+      searchTerm = '';
+      activeCategory = 'all';
+      filterBtns.forEach(b => {
+        if (b.getAttribute('data-filter') === 'all') {
+          b.classList.add('is-active');
+          b.classList.remove('text-white/50');
+        } else {
+          b.classList.remove('is-active');
+          b.classList.add('text-white/50');
+        }
+      });
+      applyFilters();
+    });
+  }
+})();
+
+// ── On-Page Table of Contents Active Spy ────────────────
+(function() {
+  const sections = [
+    { id: 'hero-thesis', link: document.querySelector('a[href="#hero-thesis"]') },
+    { id: 'professionals', link: document.querySelector('a[href="#professionals"]') },
+    { id: 'frontend-stack', link: document.querySelector('a[href="#frontend-stack"]') },
+    { id: 'backend-stack', link: document.querySelector('a[href="#backend-stack"]') },
+    { id: 'ai-ml-stack', link: document.querySelector('a[href="#ai-ml-stack"]') },
+  ];
+
+  function updateActiveLink() {
+    const scrollPos = window.scrollY + 180;
+    let currentId = 'hero-thesis';
+
+    for (let i = 0; i < sections.length; i++) {
+      const el = document.getElementById(sections[i].id);
+      if (el && el.offsetTop <= scrollPos) {
+        currentId = sections[i].id;
+      }
+    }
+
+    sections.forEach(sec => {
+      if (!sec.link) return;
+      if (sec.id === currentId) {
+        sec.link.classList.add('is-active');
+        sec.link.classList.remove('text-white/50');
+      } else {
+        sec.link.classList.remove('is-active');
+        sec.link.classList.add('text-white/50');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveLink, { passive: true });
+  updateActiveLink();
+})();
+
+// ── Scroll to Top Button ─────────────────────────────────
+(function() {
+  const topBtn = document.getElementById('btn-scroll-top');
+  if (topBtn) {
+    topBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
